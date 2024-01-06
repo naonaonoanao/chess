@@ -49,9 +49,22 @@ namespace uwp
 
             if (userRepository.VerifyUser(username, password))
             {
-               failedLoginAttempts = 0;
-               ErrorMessage.Text = "Вход успешен";
-               ErrorMessage.Visibility = Visibility.Visible;
+                failedLoginAttempts = 0;
+                ErrorMessage.Text = "Вход успешен";
+                ErrorMessage.Visibility = Visibility.Visible;
+
+                // Временный переход напрямую на доску
+
+                UsernameTextBox.Clear();
+                PasswordBox.Clear();
+                RememberPasswordBox.IsChecked = false;
+
+                ErrorMessage.Visibility = Visibility.Collapsed;
+
+                string windowName = "boardWindow";
+                WindowEventArgs args = new WindowEventArgs(windowName);
+
+                RequestChangeContent?.Invoke(this, args);
             }
             else
             {

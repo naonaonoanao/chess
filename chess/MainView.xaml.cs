@@ -25,7 +25,7 @@ namespace uwp
         LoginView loginView = new LoginView();
         RegistrationView registrationView = new RegistrationView();
         ForgotPasswordView forgotPasswordView = new ForgotPasswordView();
-        GameView gameView = new GameView();
+        GameView boardView = new GameView();
         MenuView menuView = new MenuView();
 
         public MainWindow()
@@ -50,9 +50,13 @@ namespace uwp
             {
                 MainContent.Content = forgotPasswordView;
             }
-            else if(args.windowName == "loginWindow")
+            else if (args.windowName == "loginWindow")
             {
                 MainContent.Content = loginView;
+            }
+            else if (args.windowName == "boardWindow")
+            {
+                MainContent.Content = boardView;
             }
         }
     }

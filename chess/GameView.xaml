@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:uwp"
              mc:Ignorable="d">
 
-    <Grid Name="ChessGrid">
+    <Grid Name="ChessGrid"  MouseDown="ChessGrid_MouseDown">
         <Grid.Resources>
             <!-- Стиль для ячеек шахматной доски -->
             <Style TargetType="Border" x:Key="ChessCell">

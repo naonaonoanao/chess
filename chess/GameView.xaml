@@ -1,0 +1,47 @@
+﻿<UserControl x:Class="uwp.GameView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:uwp"
+        mc:Ignorable="d">
+
+    <Grid Name="ChessGrid">
+        <Grid.Resources>
+            <!-- Стиль для ячеек шахматной доски -->
+            <Style TargetType="Border" x:Key="ChessCell">
+                <Setter Property="BorderBrush" Value="Black"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Background" Value="{Binding CellColor}"/>
+            </Style>
+        </Grid.Resources>
+
+        <!-- Ячейки шахматной доски -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Создаем ячейки -->
+        <Border Style="{StaticResource ChessCell}" Grid.Row="0" Grid.Column="0"/>
+        <Border Style="{StaticResource ChessCell}" Grid.Row="0" Grid.Column="1"/>
+        <!-- Продолжайте добавление ячеек для каждой строки и колонки -->
+    </Grid>
+
+</UserControl>

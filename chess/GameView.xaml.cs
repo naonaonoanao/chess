@@ -14,6 +14,7 @@ namespace uwp
 
         private TextBlock? selectedCell;
         private Style? selectedPrevStyle;
+        private bool IsWhiteTurn = true;
 
         private void ChessGrid_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -72,43 +73,56 @@ namespace uwp
         {
             char selectedPiece = selectedCell.Text[0];
 
-            
+
             // Проверка хода для белой пешки
-            if (selectedPiece == '♙')
+            if (IsWhiteTurn)
             {
-                if (toColumn == fromColumn && toRow == fromRow + 1 && targetCell.Text == " ")
+                if (selectedPiece == '♙')
                 {
-                    return true;
-                }
+                    if (toColumn == fromColumn && toRow == fromRow + 1 && targetCell.Text == " ")
+                    {
+                        IsWhiteTurn = false;
+                        return true;
+                    }
 
-                if (fromRow == 1 && toColumn == fromColumn && toRow == fromRow + 2 && targetCell.Text == " ")
-                {
-                    return true;
-                }
+                    if (fromRow == 1 && toColumn == fromColumn && toRow == fromRow + 2 && targetCell.Text == " ")
+                    {
+                        IsWhiteTurn = false;
+                        return true;
+                    }
 
-                if (toRow == fromRow + 1 && (toColumn == fromColumn - 1 || toColumn == fromColumn + 1) && targetCell.Text != " " && IsBlackPiece(targetCell))
-                {
-                    return true;
+                    if (toRow == fromRow + 1 && (toColumn == fromColumn - 1 || toColumn == fromColumn + 1) && targetCell.Text != " " && IsBlackPiece(targetCell))
+                    {
+                        IsWhiteTurn = false;
+                        return true;
+                    }
                 }
             }
             // Проверка хода для черной пешки
-            else if (selectedPiece == '♟')
+            else
             {
-                if (toColumn == fromColumn && toRow == fromRow + 1 && targetCell.Text == " ")
+                if (selectedPiece == '♟')
                 {
-                    return true;
-                }
+                    if (toColumn == fromColumn && toRow == fromRow - 1 && targetCell.Text == " ")
+                    {
+                        IsWhiteTurn = true;
+                        return true;
+                    }
 
-                if (fromRow == 1 && toColumn == fromColumn && toRow == fromRow + 2 && targetCell.Text == " " && GetSymbolAt(fromRow + 1, toColumn) == ' ')
-                {
-                    return true;
-                }
+                    if (fromRow == 6 && toColumn == fromColumn && toRow == fromRow - 2 && targetCell.Text == " ")
+                    {
+                        IsWhiteTurn = true;
+                        return true;
+                    }
 
-                if (toRow == fromRow + 1 && (toColumn == fromColumn - 1 || toColumn == fromColumn + 1) && targetCell.Text != " " && IsWhitePiece(toRow, toColumn))
-                {
-                    return true;
+                    if (toRow == fromRow - 1 && (toColumn == fromColumn - 1 || toColumn == fromColumn + 1) && targetCell.Text != " " && !IsBlackPiece(targetCell))
+                    {
+                        IsWhiteTurn = true;
+                        return true;
+                    }
                 }
             }
+
 
             return false;
         }
@@ -126,11 +140,6 @@ namespace uwp
         private char GetSymbolAt(int row, int column)
         {
             return ((TextBlock)ChessGrid.Children[row * 8 + column]).Text[0];
-        }
-
-        private bool IsWhitePiece(int row, int column)
-        {
-            return ((TextBlock)ChessGrid.Children[row * 8 + column]).Foreground == Brushes.White;
         }
 
         private bool IsBlackPiece(TextBlock targetCell)

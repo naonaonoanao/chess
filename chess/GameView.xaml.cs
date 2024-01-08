@@ -176,6 +176,29 @@ namespace uwp
                         return true;
                     }
                 }
+
+                else if (selectedPiece == '♗')
+                {
+                    if (
+                        (Math.Abs(toRow - fromRow) == Math.Abs(toColumn - fromColumn)) &&
+                        AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn) &&
+                        (targetCell.Text == " ")
+                       )
+                    {
+                        IsWhiteTurn = false;
+                        return true;
+                    }
+                    if (
+                        (Math.Abs(toRow - fromRow) == Math.Abs(toColumn - fromColumn)) &&
+                        AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn) &&
+                        (targetCell.Text != " ") &&
+                        (IsBlackPiece(targetCell))
+                       )
+                    {
+                        IsWhiteTurn = false;
+                        return true;
+                    }
+                }
             }
             // Проверка хода для черной пешки
             else
@@ -279,9 +302,30 @@ namespace uwp
                         return true;
                     }
                 }
+
+                else if (selectedPiece == '♝')
+                {
+                    if (
+                        (Math.Abs(toRow - fromRow) == Math.Abs(toColumn - fromColumn)) &&
+                        AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn) &&
+                        (targetCell.Text == " ")
+                       )
+                    {
+                        IsWhiteTurn = true;
+                        return true;
+                    }
+                    if (
+                        (Math.Abs(toRow - fromRow) == Math.Abs(toColumn - fromColumn)) &&
+                        AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn) &&
+                        (targetCell.Text != " ") &&
+                        (!IsBlackPiece(targetCell))
+                       )
+                    {
+                        IsWhiteTurn = true;
+                        return true;
+                    }
+                }
             }
-
-
 
             return false;
         }

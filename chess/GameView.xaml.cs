@@ -61,7 +61,7 @@ namespace uwp
             int toRow = Grid.GetRow((UIElement)targetCell.Parent);
             int toColumn = Grid.GetColumn((UIElement)targetCell.Parent);
 
-            if (IsValidPawnMove(fromRow, fromColumn, toRow, toColumn, targetCell))
+            if (IsValidMove(fromRow, fromColumn, toRow, toColumn, targetCell))
             {
                 SwapPieces(selectedCell, targetCell);
             }
@@ -69,7 +69,7 @@ namespace uwp
             selectedCell = null;
         }
 
-        private bool IsValidPawnMove(int fromRow, int fromColumn, int toRow, int toColumn, TextBlock targetCell)
+        private bool IsValidMove(int fromRow, int fromColumn, int toRow, int toColumn, TextBlock targetCell)
         {
             char selectedPiece = selectedCell.Text[0];
 
@@ -92,6 +92,33 @@ namespace uwp
                     }
 
                     if (toRow == fromRow + 1 && (toColumn == fromColumn - 1 || toColumn == fromColumn + 1) && targetCell.Text != " " && IsBlackPiece(targetCell))
+                    {
+                        IsWhiteTurn = false;
+                        return true;
+                    }
+                }
+
+                else if (selectedPiece == '♖')
+                {
+                    if (fromRow != toRow && toColumn == fromColumn && targetCell.Text == " ")
+                    {
+                        IsWhiteTurn = false;
+                        return true;
+                    }
+
+                    if (fromRow == toRow && toColumn != fromColumn && targetCell.Text == " ")
+                    {
+                        IsWhiteTurn = false;
+                        return true;
+                    }
+
+                    if (fromRow != toRow && toColumn == fromColumn && targetCell.Text != " " && IsBlackPiece(targetCell))
+                    {
+                        IsWhiteTurn = false;
+                        return true;
+                    }
+
+                    if (fromRow == toRow && toColumn != fromColumn && targetCell.Text != " " && IsBlackPiece(targetCell))
                     {
                         IsWhiteTurn = false;
                         return true;
@@ -121,11 +148,40 @@ namespace uwp
                         return true;
                     }
                 }
+
+                else if (selectedPiece == '♜')
+                {
+                    if (fromRow != toRow && toColumn == fromColumn && targetCell.Text == " ") 
+                    {
+                        IsWhiteTurn = true;
+                        return true;
+                    }
+
+                    if (fromRow == toRow && toColumn != fromColumn && targetCell.Text == " ")
+                    {
+                        IsWhiteTurn = true;
+                        return true;
+                    }
+
+                    if (fromRow != toRow && toColumn == fromColumn && targetCell.Text != " " && !IsBlackPiece(targetCell))
+                    {
+                        IsWhiteTurn = true;
+                        return true;
+                    }
+
+                    if (fromRow == toRow && toColumn != fromColumn && targetCell.Text != " " && !IsBlackPiece(targetCell))
+                    {
+                        IsWhiteTurn = true;
+                        return true;
+                    }
+                }
             }
+
 
 
             return false;
         }
+
 
         private void SwapPieces(TextBlock sourceCell, TextBlock targetCell)
         {

@@ -1,50 +1,141 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-
 
 namespace uwp
 {
     public partial class GameView : UserControl
     {
-        private Border selectedCell; // Переменная для хранения выбранной ячейки
+        public GameView()
+        {
+            InitializeComponent();
+        }
+
+        private TextBlock? selectedCell;
+        private Style? selectedPrevStyle;
 
         private void ChessGrid_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            // Получаем элемент, на который было нажатие
             UIElement element = e.OriginalSource as UIElement;
 
-            // Проверяем, является ли элемент ячейкой (Border)
-            if (element is Border clickedCell)
+            if (element is TextBlock)
             {
-                // Проверяем, содержит ли ячейка TextBlock с фигурой
-                if (clickedCell.Child is TextBlock textBlock && !string.IsNullOrEmpty(textBlock.Text.Trim()))
+                ReturnPrevSelectedStyle();
+                if (selectedCell == null)
                 {
-                    // Если фигура уже выбрана, снимаем выделение
-                    if (selectedCell != null)
-                    {
-                        textBlock.Text = (selectedCell.Child as TextBlock)?.Text; // Перемещаем фигуру
-                        (selectedCell.Child as TextBlock)?.ClearValue(TextBlock.TextProperty); // Очищаем старую ячейку
-                        selectedCell = null; // Сбрасываем выбранную ячейку
-                    }
-                    else
-                    {
-                        // Если фигура еще не выбрана, запоминаем текущую ячейку
-                        selectedCell = clickedCell;
-                    }
+                    selectedCell = (TextBlock)element;
+                    HighlightSelectedCell();
+                }
+                else
+                {
+                    MovePiece((TextBlock)element);
                 }
             }
         }
 
+        private void HighlightSelectedCell()
+        {
+            if (selectedCell != null && selectedCell.Parent is Border)
+            {
+                Border selectedBorder = (Border)selectedCell.Parent;
+                selectedPrevStyle = selectedBorder.Style;
+                selectedBorder.Style = ChessGrid.Resources["ChessCellSelected"] as Style;
+            }
+        }
+
+        private void ReturnPrevSelectedStyle()
+        {
+            if (selectedCell != null && selectedCell.Parent is Border)
+            {
+                Border selectedBorder = (Border)selectedCell.Parent;
+                selectedBorder.Style = selectedPrevStyle;
+            }
+        }
+
+        private void MovePiece(TextBlock targetCell)
+        {
+            int fromRow = Grid.GetRow((UIElement)selectedCell.Parent);
+            int fromColumn = Grid.GetColumn((UIElement)selectedCell.Parent);
+            int toRow = Grid.GetRow((UIElement)targetCell.Parent);
+            int toColumn = Grid.GetColumn((UIElement)targetCell.Parent);
+
+            if (IsValidPawnMove(fromRow, fromColumn, toRow, toColumn, targetCell))
+            {
+                SwapPieces(selectedCell, targetCell);
+            }
+
+            selectedCell = null;
+        }
+
+        private bool IsValidPawnMove(int fromRow, int fromColumn, int toRow, int toColumn, TextBlock targetCell)
+        {
+            char selectedPiece = selectedCell.Text[0];
+
+            
+            // Проверка хода для белой пешки
+            if (selectedPiece == '♙')
+            {
+                if (toColumn == fromColumn && toRow == fromRow + 1 && targetCell.Text == " ")
+                {
+                    return true;
+                }
+
+                if (fromRow == 1 && toColumn == fromColumn && toRow == fromRow + 2 && targetCell.Text == " ")
+                {
+                    return true;
+                }
+
+                if (toRow == fromRow + 1 && (toColumn == fromColumn - 1 || toColumn == fromColumn + 1) && targetCell.Text != " " && IsBlackPiece(targetCell))
+                {
+                    return true;
+                }
+            }
+            // Проверка хода для черной пешки
+            else if (selectedPiece == '♟')
+            {
+                if (toColumn == fromColumn && toRow == fromRow + 1 && targetCell.Text == " ")
+                {
+                    return true;
+                }
+
+                if (fromRow == 1 && toColumn == fromColumn && toRow == fromRow + 2 && targetCell.Text == " " && GetSymbolAt(fromRow + 1, toColumn) == ' ')
+                {
+                    return true;
+                }
+
+                if (toRow == fromRow + 1 && (toColumn == fromColumn - 1 || toColumn == fromColumn + 1) && targetCell.Text != " " && IsWhitePiece(toRow, toColumn))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private void SwapPieces(TextBlock sourceCell, TextBlock targetCell)
+        {
+            var oldForeground = sourceCell.Foreground;
+            sourceCell.Foreground = targetCell.Foreground;
+            targetCell.Foreground = oldForeground;
+
+            targetCell.Text = sourceCell.Text;
+            sourceCell.Text = " ";
+        }
+
+        private char GetSymbolAt(int row, int column)
+        {
+            return ((TextBlock)ChessGrid.Children[row * 8 + column]).Text[0];
+        }
+
+        private bool IsWhitePiece(int row, int column)
+        {
+            return ((TextBlock)ChessGrid.Children[row * 8 + column]).Foreground == Brushes.White;
+        }
+
+        private bool IsBlackPiece(TextBlock targetCell)
+        {
+            return targetCell.Foreground == Brushes.Black;
+        }
     }
 }

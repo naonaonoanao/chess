@@ -6,6 +6,13 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "chess", "chess\chess.csproj", "{75825614-4182-443D-9E10-CA93940EE24B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решения", "Элементы решения", "{CC34F62D-DC9C-4781-A37B-537F8DDF21A2}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\OneDrive\Рабочий стол\fingerprint.pb = ..\..\..\OneDrive\Рабочий стол\fingerprint.pb
+		..\..\..\OneDrive\Рабочий стол\keras_metadata.pb = ..\..\..\OneDrive\Рабочий стол\keras_metadata.pb
+		..\..\..\OneDrive\Рабочий стол\saved_model.pb = ..\..\..\OneDrive\Рабочий стол\saved_model.pb
+		..\..\..\OneDrive\Рабочий стол\variables\variables.data-00000-of-00001 = ..\..\..\OneDrive\Рабочий стол\variables\variables.data-00000-of-00001
+		..\..\..\OneDrive\Рабочий стол\variables\variables.index = ..\..\..\OneDrive\Рабочий стол\variables\variables.index
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

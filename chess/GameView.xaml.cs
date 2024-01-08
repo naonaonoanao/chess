@@ -85,7 +85,7 @@ namespace uwp
                         return true;
                     }
 
-                    if (fromRow == 1 && toColumn == fromColumn && toRow == fromRow + 2 && targetCell.Text == " ")
+                    if (fromRow == 1 && toColumn == fromColumn && toRow == fromRow + 2 && targetCell.Text == " " && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn))
                     {
                         IsWhiteTurn = false;
                         return true;
@@ -100,25 +100,53 @@ namespace uwp
 
                 else if (selectedPiece == '♖')
                 {
-                    if (fromRow != toRow && toColumn == fromColumn && targetCell.Text == " ")
+                    if (fromRow != toRow && toColumn == fromColumn && targetCell.Text == " " && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn))
                     {
                         IsWhiteTurn = false;
                         return true;
                     }
 
-                    if (fromRow == toRow && toColumn != fromColumn && targetCell.Text == " ")
+                    if (fromRow == toRow && toColumn != fromColumn && targetCell.Text == " " && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn))
                     {
                         IsWhiteTurn = false;
                         return true;
                     }
 
-                    if (fromRow != toRow && toColumn == fromColumn && targetCell.Text != " " && IsBlackPiece(targetCell))
+                    if (fromRow != toRow && toColumn == fromColumn && targetCell.Text != " " && IsBlackPiece(targetCell) && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn))
                     {
                         IsWhiteTurn = false;
                         return true;
                     }
 
-                    if (fromRow == toRow && toColumn != fromColumn && targetCell.Text != " " && IsBlackPiece(targetCell))
+                    if (fromRow == toRow && toColumn != fromColumn && targetCell.Text != " " && IsBlackPiece(targetCell) && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn))
+                    {
+                        IsWhiteTurn = false;
+                        return true;
+                    }
+                }
+
+                else if (selectedPiece == '♔')
+                {
+                    if (
+                        (((toRow == fromRow + 1 || toRow == fromRow - 1) && fromColumn == toColumn) ||
+                        ((toColumn == fromColumn + 1 || toColumn == fromColumn - 1) && fromRow == toRow) ||
+                        ((toColumn == fromColumn - 1 && toRow == fromRow + 1) || (toColumn == fromColumn + 1 && toRow == fromRow - 1)) ||
+                        ((toColumn == fromColumn + 1 && toRow == fromRow + 1) || (toColumn == fromColumn - 1 && toRow == fromRow - 1))) &&
+                        (targetCell.Text == " ")
+                       )
+                    {
+                        IsWhiteTurn = false;
+                        return true;
+                    }
+
+                    if (
+                        (((toRow == fromRow + 1 || toRow == fromRow - 1) && fromColumn == toColumn) ||
+                        ((toColumn == fromColumn + 1 || toColumn == fromColumn - 1) && fromRow == toRow) ||
+                        ((toColumn == fromColumn - 1 && toRow == fromRow + 1) || (toColumn == fromColumn + 1 && toRow == fromRow - 1)) ||
+                        ((toColumn == fromColumn + 1 && toRow == fromRow + 1) || (toColumn == fromColumn - 1 && toRow == fromRow - 1))) &&
+                        (targetCell.Text != " ") &&
+                        (IsBlackPiece(targetCell))
+                       )
                     {
                         IsWhiteTurn = false;
                         return true;
@@ -136,7 +164,7 @@ namespace uwp
                         return true;
                     }
 
-                    if (fromRow == 6 && toColumn == fromColumn && toRow == fromRow - 2 && targetCell.Text == " ")
+                    if (fromRow == 6 && toColumn == fromColumn && toRow == fromRow - 2 && targetCell.Text == " " && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn))
                     {
                         IsWhiteTurn = true;
                         return true;
@@ -151,25 +179,53 @@ namespace uwp
 
                 else if (selectedPiece == '♜')
                 {
-                    if (fromRow != toRow && toColumn == fromColumn && targetCell.Text == " ") 
+                    if (fromRow != toRow && toColumn == fromColumn && targetCell.Text == " " && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn)) 
                     {
                         IsWhiteTurn = true;
                         return true;
                     }
 
-                    if (fromRow == toRow && toColumn != fromColumn && targetCell.Text == " ")
+                    if (fromRow == toRow && toColumn != fromColumn && targetCell.Text == " " && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn))
                     {
                         IsWhiteTurn = true;
                         return true;
                     }
 
-                    if (fromRow != toRow && toColumn == fromColumn && targetCell.Text != " " && !IsBlackPiece(targetCell))
+                    if (fromRow != toRow && toColumn == fromColumn && targetCell.Text != " " && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn) && !IsBlackPiece(targetCell))
                     {
                         IsWhiteTurn = true;
                         return true;
                     }
 
-                    if (fromRow == toRow && toColumn != fromColumn && targetCell.Text != " " && !IsBlackPiece(targetCell))
+                    if (fromRow == toRow && toColumn != fromColumn && targetCell.Text != " " && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn) && !IsBlackPiece(targetCell))
+                    {
+                        IsWhiteTurn = true;
+                        return true;
+                    }
+                }
+
+                else if (selectedPiece == '♚')
+                {
+                    if (
+                        (((toRow == fromRow + 1 || toRow == fromRow - 1) && fromColumn == toColumn) ||
+                        ((toColumn == fromColumn + 1 || toColumn == fromColumn - 1) && fromRow == toRow) ||
+                        ((toColumn == fromColumn - 1 && toRow == fromRow + 1) || (toColumn == fromColumn + 1 && toRow == fromRow - 1)) ||
+                        ((toColumn == fromColumn + 1 && toRow == fromRow + 1) || (toColumn == fromColumn - 1 && toRow == fromRow - 1))) &&
+                        (targetCell.Text == " ")
+                       )
+                    {
+                        IsWhiteTurn = true;
+                        return true;
+                    }
+
+                    if (
+                        (((toRow == fromRow + 1 || toRow == fromRow - 1) && fromColumn == toColumn) ||
+                        ((toColumn == fromColumn + 1 || toColumn == fromColumn - 1) && fromRow == toRow) ||
+                        ((toColumn == fromColumn - 1 && toRow == fromRow + 1) || (toColumn == fromColumn + 1 && toRow == fromRow - 1)) ||
+                        ((toColumn == fromColumn + 1 && toRow == fromRow + 1) || (toColumn == fromColumn - 1 && toRow == fromRow - 1))) &&
+                        (targetCell.Text != " ") &&
+                        (!IsBlackPiece(targetCell))
+                       )
                     {
                         IsWhiteTurn = true;
                         return true;
@@ -180,6 +236,65 @@ namespace uwp
 
 
             return false;
+        }
+
+        private bool AreIntermediateCellsEmpty(int fromRow, int fromColumn, int toRow, int toColumn)
+        {
+            if (fromRow != toRow && toColumn == fromColumn) // Вертикальное перемещение
+            {
+                int step = (toRow > fromRow) ? 1 : -1; // Определяем направление движения
+
+                for (int row = fromRow + step; row != toRow; row += step)
+                {
+                    if (!IsCellEmpty(row, fromColumn))
+                    {
+                        // Промежуточная клетка занята, ход недопустим
+                        return false;
+                    }
+                }
+            }
+            else if (fromRow == toRow && toColumn != fromColumn) // Горизонтальное перемещение
+            {
+                int step = (toColumn > fromColumn) ? 1 : -1; // Определяем направление движения
+
+                for (int col = fromColumn + step; col != toColumn; col += step)
+                {
+                    if (!IsCellEmpty(fromRow, col))
+                    {
+                        // Промежуточная клетка занята, ход недопустим
+                        return false;
+                    }
+                }
+            }
+            else if (Math.Abs(toRow - fromRow) == Math.Abs(toColumn - fromColumn)) // Диагональное перемещение
+            {
+                int rowStep = (toRow > fromRow) ? 1 : -1; // Определяем направление движения по вертикали
+                int colStep = (toColumn > fromColumn) ? 1 : -1; // Определяем направление движения по горизонтали
+
+                for (int row = fromRow + rowStep, col = fromColumn + colStep; row != toRow && col != toColumn; row += rowStep, col += colStep)
+                {
+                    if (!IsCellEmpty(row, col))
+                    {
+                        // Промежуточная клетка занята, ход недопустим
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        private bool IsCellEmpty(int row, int column)
+        {
+            if (ChessGrid.Children.Cast<UIElement>()
+                .FirstOrDefault(c => Grid.GetRow(c) == row && Grid.GetColumn(c) == column) is Border border
+                && border.Child is TextBlock intermediateCell
+                && intermediateCell.Text != " ")
+            {
+                return false;
+            }
+
+            return true;
         }
 
 

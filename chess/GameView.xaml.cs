@@ -152,6 +152,30 @@ namespace uwp
                         return true;
                     }
                 }
+
+                else if (selectedPiece == '♘')
+                {
+                    if (
+                        (((toRow == fromRow + 1 || toRow == fromRow - 1) && (toColumn == fromColumn - 2 || toColumn == fromColumn + 2)) ||
+                        ((toColumn == fromColumn + 1 || toColumn == fromColumn - 1) && (toRow == fromRow - 2 || toRow == fromRow + 2))) &&
+                        (targetCell.Text == " ")
+                       )
+                    {
+                        IsWhiteTurn = false;
+                        return true;
+                    }
+
+                    if (
+                        (((toRow == fromRow + 1 || toRow == fromRow - 1) && (toColumn == fromColumn - 2 || toColumn == fromColumn + 2)) ||
+                        ((toColumn == fromColumn + 1 || toColumn == fromColumn - 1) && (toRow == fromRow - 2 || toRow == fromRow + 2))) &&
+                        (targetCell.Text != " ") &&
+                        (IsBlackPiece(targetCell))
+                       )
+                    {
+                        IsWhiteTurn = false;
+                        return true;
+                    }
+                }
             }
             // Проверка хода для черной пешки
             else
@@ -223,6 +247,30 @@ namespace uwp
                         ((toColumn == fromColumn + 1 || toColumn == fromColumn - 1) && fromRow == toRow) ||
                         ((toColumn == fromColumn - 1 && toRow == fromRow + 1) || (toColumn == fromColumn + 1 && toRow == fromRow - 1)) ||
                         ((toColumn == fromColumn + 1 && toRow == fromRow + 1) || (toColumn == fromColumn - 1 && toRow == fromRow - 1))) &&
+                        (targetCell.Text != " ") &&
+                        (!IsBlackPiece(targetCell))
+                       )
+                    {
+                        IsWhiteTurn = true;
+                        return true;
+                    }
+                }
+
+                else if (selectedPiece == '♞')
+                {
+                    if (
+                        (((toRow == fromRow + 1 || toRow == fromRow - 1) && (toColumn == fromColumn - 2 || toColumn == fromColumn + 2)) ||
+                        ((toColumn == fromColumn + 1 || toColumn == fromColumn - 1) && (toRow == fromRow - 2 || toRow == fromRow + 2))) &&
+                        (targetCell.Text == " ")
+                       )
+                    {
+                        IsWhiteTurn = true;
+                        return true;
+                    }
+
+                    if (
+                        (((toRow == fromRow + 1 || toRow == fromRow - 1) && (toColumn == fromColumn - 2 || toColumn == fromColumn + 2)) ||
+                        ((toColumn == fromColumn + 1 || toColumn == fromColumn - 1) && (toRow == fromRow - 2 || toRow == fromRow + 2))) &&
                         (targetCell.Text != " ") &&
                         (!IsBlackPiece(targetCell))
                        )

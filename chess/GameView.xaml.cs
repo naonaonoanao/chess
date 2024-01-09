@@ -91,13 +91,22 @@ namespace uwp
                         return true;
                     }
 
+                    // Сруб белой пешки
                     if (toRow == fromRow + 1 && (toColumn == fromColumn - 1 || toColumn == fromColumn + 1) && targetCell.Text != " " && IsBlackPiece(targetCell))
                     {
                         IsWhiteTurn = false;
                         return true;
                     }
+
+                    // Пешка дошедшая до конца доски превращается в другую фигуру на выбор
+                    if (toRow == 7)
+                    {
+                        PromotePawn(targetCell);
+                        return true;
+                    }
                 }
 
+                // Проверка хода для белой башни
                 else if (selectedPiece == '♖')
                 {
                     if (fromRow != toRow && toColumn == fromColumn && targetCell.Text == " " && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn))
@@ -112,12 +121,14 @@ namespace uwp
                         return true;
                     }
 
+                    // Сруб белой башни по вертикали
                     if (fromRow != toRow && toColumn == fromColumn && targetCell.Text != " " && IsBlackPiece(targetCell) && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn))
                     {
                         IsWhiteTurn = false;
                         return true;
                     }
 
+                    // Сруб белой башни по горизонтали
                     if (fromRow == toRow && toColumn != fromColumn && targetCell.Text != " " && IsBlackPiece(targetCell) && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn))
                     {
                         IsWhiteTurn = false;
@@ -125,6 +136,7 @@ namespace uwp
                     }
                 }
 
+                // Проверка хода белого короля
                 else if (selectedPiece == '♔')
                 {
                     if (
@@ -139,6 +151,7 @@ namespace uwp
                         return true;
                     }
 
+                    // Сруб белого короля
                     if (
                         (((toRow == fromRow + 1 || toRow == fromRow - 1) && fromColumn == toColumn) ||
                         ((toColumn == fromColumn + 1 || toColumn == fromColumn - 1) && fromRow == toRow) ||
@@ -153,6 +166,7 @@ namespace uwp
                     }
                 }
 
+                // Проверка белого коня
                 else if (selectedPiece == '♘')
                 {
                     if (
@@ -165,6 +179,7 @@ namespace uwp
                         return true;
                     }
 
+                    // Сруб белого коня
                     if (
                         (((toRow == fromRow + 1 || toRow == fromRow - 1) && (toColumn == fromColumn - 2 || toColumn == fromColumn + 2)) ||
                         ((toColumn == fromColumn + 1 || toColumn == fromColumn - 1) && (toRow == fromRow - 2 || toRow == fromRow + 2))) &&
@@ -177,6 +192,7 @@ namespace uwp
                     }
                 }
 
+                // Проверка белого белого слона
                 else if (selectedPiece == '♗')
                 {
                     if (
@@ -188,6 +204,8 @@ namespace uwp
                         IsWhiteTurn = false;
                         return true;
                     }
+
+                    // Сруб белого слона
                     if (
                         (Math.Abs(toRow - fromRow) == Math.Abs(toColumn - fromColumn)) &&
                         AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn) &&
@@ -200,6 +218,7 @@ namespace uwp
                     }
                 }
 
+                // Проверка хода белой королевы
                 else if (selectedPiece == '♕')
                 {
                     if (
@@ -215,6 +234,7 @@ namespace uwp
                         return true;
                     }
 
+                    // Сруб белой королевы
                     if (
                         (((Math.Abs(toRow - fromRow) == Math.Abs(toColumn - fromColumn)) &&
                         AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn)) ||
@@ -253,8 +273,16 @@ namespace uwp
                         IsWhiteTurn = true;
                         return true;
                     }
+
+                    // Пешка дошедшая до конца доски превращается в другую фигуру на выбор
+                    if (toRow == 0)
+                    {
+                        PromotePawn(targetCell);
+                        return true;
+                    }
                 }
 
+                // Проверка хода для черной башни
                 else if (selectedPiece == '♜')
                 {
                     if (fromRow != toRow && toColumn == fromColumn && targetCell.Text == " " && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn)) 
@@ -282,6 +310,7 @@ namespace uwp
                     }
                 }
 
+                // Проверка хода для черного короля
                 else if (selectedPiece == '♚')
                 {
                     if (
@@ -310,6 +339,7 @@ namespace uwp
                     }
                 }
 
+                // Проверка хода для черного коня
                 else if (selectedPiece == '♞')
                 {
                     if (
@@ -322,6 +352,7 @@ namespace uwp
                         return true;
                     }
 
+                    // Сруб черного коня
                     if (
                         (((toRow == fromRow + 1 || toRow == fromRow - 1) && (toColumn == fromColumn - 2 || toColumn == fromColumn + 2)) ||
                         ((toColumn == fromColumn + 1 || toColumn == fromColumn - 1) && (toRow == fromRow - 2 || toRow == fromRow + 2))) &&
@@ -334,6 +365,7 @@ namespace uwp
                     }
                 }
 
+                // Проверка хода для черного слона
                 else if (selectedPiece == '♝')
                 {
                     if (
@@ -345,6 +377,8 @@ namespace uwp
                         IsWhiteTurn = true;
                         return true;
                     }
+
+                    // Сруб черного слона
                     if (
                         (Math.Abs(toRow - fromRow) == Math.Abs(toColumn - fromColumn)) &&
                         AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn) &&
@@ -357,6 +391,7 @@ namespace uwp
                     }
                 }
 
+                // Проверка хода для черной королевы
                 else if (selectedPiece == '♛')
                 {
                     if (
@@ -372,6 +407,7 @@ namespace uwp
                         return true;
                     }
 
+                    // Сруб черной королевы
                     if (
                         (((Math.Abs(toRow - fromRow) == Math.Abs(toColumn - fromColumn)) &&
                         AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn)) ||
@@ -471,5 +507,12 @@ namespace uwp
         {
             return targetCell.Foreground == Brushes.Black;
         }
+
+        //Выбор новой фигуры для пешки
+        private void PromotePawn(TextBlock targetCell)
+        {
+            
+        }
+
     }
 }

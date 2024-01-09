@@ -163,14 +163,16 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <!-- Добавлен стиль для основной сетки для управления фоном и размером -->
+        <Style x:Key="MainGridStyle" TargetType="Grid">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
     </UserControl.Resources>
-    <Grid Margin="-267,-156,-270,-224" RenderTransformOrigin="0.489,0.35" VerticalAlignment="Center">
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1308*"/>
-            <ColumnDefinition Width="559*"/>
-        </Grid.ColumnDefinitions>
-        <Border CornerRadius="10" HorizontalAlignment="Left" Height="359" Width="383" Margin="814,-86,0,0" Opacity="1" VerticalAlignment="Top">
+    <Grid Style="{StaticResource MainGridStyle}">
+        <Border CornerRadius="10" HorizontalAlignment="Center" Height="359" Width="383" Margin="0,0,0,0" Opacity="1" VerticalAlignment="Center">
             <Border.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                     <GradientStop Color="#FF6A5A" Offset="0"/>
@@ -198,7 +200,7 @@
 
                 <Grid HorizontalAlignment="Left">
                     <Button Content="Забыли пароль?" Click="ForgotPasswordWindow"
-                    Style="{StaticResource LinkButtonStyle}" Width="179" HorizontalAlignment="Left" Margin="33,0,0,0"/>
+    Style="{StaticResource LinkButtonStyle}" Width="179" HorizontalAlignment="Left" Margin="33,0,0,0"/>
                 </Grid>
 
                 <Grid HorizontalAlignment="Right">
@@ -207,7 +209,7 @@
                         <ColumnDefinition Width="87*"/>
                     </Grid.ColumnDefinitions>
                     <Button Content="Регистрация" Click="RegistrationWindow"
-                    Style="{StaticResource LinkButtonStyle}" Height="23" Width="153" Margin="-20,-22,0,0" VerticalAlignment="Top" Grid.Column="1" HorizontalAlignment="Left"  />
+    Style="{StaticResource LinkButtonStyle}" Height="23" Width="153" Margin="-20,-22,0,0" VerticalAlignment="Top" Grid.Column="1" HorizontalAlignment="Left"  />
                 </Grid>
             </StackPanel>
             <Border.Effect>
@@ -215,5 +217,6 @@
             </Border.Effect>
         </Border>
     </Grid>
+
 
 </UserControl>

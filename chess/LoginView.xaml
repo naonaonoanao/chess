@@ -169,6 +169,24 @@
             <Setter Property="HorizontalAlignment" Value="Center"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
+        <!-- Добавлен стиль для глазка, отображающего/скрывающего пароль -->
+        <Style x:Key="PasswordToggleEyeStyle" TargetType="ToggleButton">
+            <Setter Property="Content" Value="&#xE109;" />
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <!-- Добавлен стиль для глазка, отображающего/скрывающего пароль в активном состоянии -->
+        <Style x:Key="PasswordToggleEyeCheckedStyle" TargetType="ToggleButton" BasedOn="{StaticResource PasswordToggleEyeStyle}">
+            <Setter Property="Content" Value="&#xE10E;" />
+        </Style>
     </UserControl.Resources>
 
     <Grid Style="{StaticResource MainGridStyle}">
@@ -185,7 +203,11 @@
                     <TextBox Style="{StaticResource LoginTextBox}" x:Name="UsernameTextBox" Width="361" Height="43" Padding="5" Tag="Почта" FontSize="17" VerticalContentAlignment="Center" Opacity="0.2"/>
                 </Border>
                 <Border BorderBrush="White" BorderThickness="1" CornerRadius="10" Margin="0,20,0,0">
-                    <PasswordBox Style="{StaticResource PasswordTextBox}" x:Name="PasswordBox" Width="363" Height="44" Padding="5" Tag="Пароль" PasswordChanged="PasswordBox_PasswordChanged" FontSize="17" VerticalContentAlignment="Center" Opacity="0.2"/>
+                    <Grid>
+                        <PasswordBox Style="{StaticResource PasswordTextBox}" x:Name="PasswordBox" Width="363" Height="44" Padding="5" Tag="Пароль" PasswordChanged="PasswordBox_PasswordChanged" FontSize="17" VerticalContentAlignment="Center" Opacity="0.2"/>
+                        <!-- Добавлен ToggleButton для отображения/скрытия пароля -->
+                        <CheckBox Style="{StaticResource PasswordToggleEyeStyle}" IsChecked="{Binding IsChecked, ElementName=PasswordToggle}" />
+                    </Grid>
                 </Border>
                 <Grid HorizontalAlignment="Left" Margin="0,15,0,0">
                     <Grid.ColumnDefinitions>

@@ -1,7 +1,9 @@
-﻿using System.Windows;
+﻿using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using Chess;
 
 namespace uwp
 {
@@ -15,6 +17,32 @@ namespace uwp
         private TextBlock? selectedCell;
         private Style? selectedPrevStyle;
         private bool IsWhiteTurn = true;
+
+        private ChessBoard board = new ChessBoard();
+
+        private Dictionary<int, int> blackRows  = new Dictionary<int, int>()
+        {
+            { 0, 1 },
+            { 1, 2 },
+            { 2, 3 },
+            { 3, 4 },
+            { 4, 5 },
+            { 5, 6 },
+            { 6, 7 },
+            { 7, 8 },
+        };
+
+        private Dictionary<int, string> blackColumns = new Dictionary<int, string>()
+        {
+            { 1, "h" },
+            { 2, "g" },
+            { 3, "f" },
+            { 4, "e" },
+            { 5, "d" },
+            { 6, "c" },
+            { 7, "b" },
+            { 8, "a" },
+        };
 
         private void ChessGrid_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -67,365 +95,36 @@ namespace uwp
             }
 
             selectedCell = null;
+
+            if (board.IsEndGame)
+            {
+                EndGame();
+            }
         }
 
         private bool IsValidMove(int fromRow, int fromColumn, int toRow, int toColumn, TextBlock targetCell)
         {
-            char selectedPiece = selectedCell.Text[0];
-
-
-            // Проверка хода для белой пешки
-            if (IsWhiteTurn)
+            string fromCell = blackColumns[fromColumn] + blackRows[fromRow];
+            string toCell = blackColumns[toColumn] + blackRows[toRow];
+            
+            if (board[fromCell] is null)
             {
-                if (selectedPiece == '♙')
-                {
-                    if (toColumn == fromColumn && toRow == fromRow + 1 && targetCell.Text == " ")
-                    {
-                        IsWhiteTurn = false;
-                        return true;
-                    }
-
-                    if (fromRow == 1 && toColumn == fromColumn && toRow == fromRow + 2 && targetCell.Text == " " && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn))
-                    {
-                        IsWhiteTurn = false;
-                        return true;
-                    }
-
-                    // Сруб белой пешки
-                    if (toRow == fromRow + 1 && (toColumn == fromColumn - 1 || toColumn == fromColumn + 1) && targetCell.Text != " " && IsBlackPiece(targetCell))
-                    {
-                        IsWhiteTurn = false;
-                        return true;
-                    }
-
-                    // Пешка дошедшая до конца доски превращается в другую фигуру на выбор
-                    if (toRow == 7)
-                    {
-                        PromotePawn(targetCell);
-                        return true;
-                    }
-                }
-
-                // Проверка хода для белой башни
-                else if (selectedPiece == '♖')
-                {
-                    if (fromRow != toRow && toColumn == fromColumn && targetCell.Text == " " && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn))
-                    {
-                        IsWhiteTurn = false;
-                        return true;
-                    }
-
-                    if (fromRow == toRow && toColumn != fromColumn && targetCell.Text == " " && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn))
-                    {
-                        IsWhiteTurn = false;
-                        return true;
-                    }
-
-                    // Сруб белой башни по вертикали
-                    if (fromRow != toRow && toColumn == fromColumn && targetCell.Text != " " && IsBlackPiece(targetCell) && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn))
-                    {
-                        IsWhiteTurn = false;
-                        return true;
-                    }
-
-                    // Сруб белой башни по горизонтали
-                    if (fromRow == toRow && toColumn != fromColumn && targetCell.Text != " " && IsBlackPiece(targetCell) && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn))
-                    {
-                        IsWhiteTurn = false;
-                        return true;
-                    }
-                }
-
-                // Проверка хода белого короля
-                else if (selectedPiece == '♔')
-                {
-                    if (
-                        (((toRow == fromRow + 1 || toRow == fromRow - 1) && fromColumn == toColumn) ||
-                        ((toColumn == fromColumn + 1 || toColumn == fromColumn - 1) && fromRow == toRow) ||
-                        ((toColumn == fromColumn - 1 && toRow == fromRow + 1) || (toColumn == fromColumn + 1 && toRow == fromRow - 1)) ||
-                        ((toColumn == fromColumn + 1 && toRow == fromRow + 1) || (toColumn == fromColumn - 1 && toRow == fromRow - 1))) &&
-                        (targetCell.Text == " ")
-                       )
-                    {
-                        IsWhiteTurn = false;
-                        return true;
-                    }
-
-                    // Сруб белого короля
-                    if (
-                        (((toRow == fromRow + 1 || toRow == fromRow - 1) && fromColumn == toColumn) ||
-                        ((toColumn == fromColumn + 1 || toColumn == fromColumn - 1) && fromRow == toRow) ||
-                        ((toColumn == fromColumn - 1 && toRow == fromRow + 1) || (toColumn == fromColumn + 1 && toRow == fromRow - 1)) ||
-                        ((toColumn == fromColumn + 1 && toRow == fromRow + 1) || (toColumn == fromColumn - 1 && toRow == fromRow - 1))) &&
-                        (targetCell.Text != " ") &&
-                        (IsBlackPiece(targetCell))
-                       )
-                    {
-                        IsWhiteTurn = false;
-                        return true;
-                    }
-                }
-
-                // Проверка белого коня
-                else if (selectedPiece == '♘')
-                {
-                    if (
-                        (((toRow == fromRow + 1 || toRow == fromRow - 1) && (toColumn == fromColumn - 2 || toColumn == fromColumn + 2)) ||
-                        ((toColumn == fromColumn + 1 || toColumn == fromColumn - 1) && (toRow == fromRow - 2 || toRow == fromRow + 2))) &&
-                        (targetCell.Text == " ")
-                       )
-                    {
-                        IsWhiteTurn = false;
-                        return true;
-                    }
-
-                    // Сруб белого коня
-                    if (
-                        (((toRow == fromRow + 1 || toRow == fromRow - 1) && (toColumn == fromColumn - 2 || toColumn == fromColumn + 2)) ||
-                        ((toColumn == fromColumn + 1 || toColumn == fromColumn - 1) && (toRow == fromRow - 2 || toRow == fromRow + 2))) &&
-                        (targetCell.Text != " ") &&
-                        (IsBlackPiece(targetCell))
-                       )
-                    {
-                        IsWhiteTurn = false;
-                        return true;
-                    }
-                }
-
-                // Проверка белого белого слона
-                else if (selectedPiece == '♗')
-                {
-                    if (
-                        (Math.Abs(toRow - fromRow) == Math.Abs(toColumn - fromColumn)) &&
-                        AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn) &&
-                        (targetCell.Text == " ")
-                       )
-                    {
-                        IsWhiteTurn = false;
-                        return true;
-                    }
-
-                    // Сруб белого слона
-                    if (
-                        (Math.Abs(toRow - fromRow) == Math.Abs(toColumn - fromColumn)) &&
-                        AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn) &&
-                        (targetCell.Text != " ") &&
-                        (IsBlackPiece(targetCell))
-                       )
-                    {
-                        IsWhiteTurn = false;
-                        return true;
-                    }
-                }
-
-                // Проверка хода белой королевы
-                else if (selectedPiece == '♕')
-                {
-                    if (
-                        (((Math.Abs(toRow - fromRow) == Math.Abs(toColumn - fromColumn)) &&
-                        AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn)) ||
-                        (fromRow == toRow && toColumn != fromColumn && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn)) ||
-                        (fromRow != toRow && toColumn == fromColumn && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn)))
-                        &&
-                        (targetCell.Text == " ")
-                       )
-                    {
-                        IsWhiteTurn = false;
-                        return true;
-                    }
-
-                    // Сруб белой королевы
-                    if (
-                        (((Math.Abs(toRow - fromRow) == Math.Abs(toColumn - fromColumn)) &&
-                        AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn)) ||
-                        (fromRow == toRow && toColumn != fromColumn && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn)) ||
-                        (fromRow != toRow && toColumn == fromColumn && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn)))
-                        &&
-                        (targetCell.Text != " ")
-                        &&
-                        (IsBlackPiece(targetCell))
-                       )
-                    {
-                        IsWhiteTurn = false;
-                        return true;
-                    }
-                }
-            }
-            // Проверка хода для черной пешки
-            else
-            {
-                if (selectedPiece == '♟')
-                {
-                    if (toColumn == fromColumn && toRow == fromRow - 1 && targetCell.Text == " ")
-                    {
-                        IsWhiteTurn = true;
-                        return true;
-                    }
-
-                    if (fromRow == 6 && toColumn == fromColumn && toRow == fromRow - 2 && targetCell.Text == " " && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn))
-                    {
-                        IsWhiteTurn = true;
-                        return true;
-                    }
-
-                    if (toRow == fromRow - 1 && (toColumn == fromColumn - 1 || toColumn == fromColumn + 1) && targetCell.Text != " " && !IsBlackPiece(targetCell))
-                    {
-                        IsWhiteTurn = true;
-                        return true;
-                    }
-
-                    // Пешка дошедшая до конца доски превращается в другую фигуру на выбор
-                    if (toRow == 0)
-                    {
-                        PromotePawn(targetCell);
-                        return true;
-                    }
-                }
-
-                // Проверка хода для черной башни
-                else if (selectedPiece == '♜')
-                {
-                    if (fromRow != toRow && toColumn == fromColumn && targetCell.Text == " " && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn)) 
-                    {
-                        IsWhiteTurn = true;
-                        return true;
-                    }
-
-                    if (fromRow == toRow && toColumn != fromColumn && targetCell.Text == " " && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn))
-                    {
-                        IsWhiteTurn = true;
-                        return true;
-                    }
-
-                    if (fromRow != toRow && toColumn == fromColumn && targetCell.Text != " " && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn) && !IsBlackPiece(targetCell))
-                    {
-                        IsWhiteTurn = true;
-                        return true;
-                    }
-
-                    if (fromRow == toRow && toColumn != fromColumn && targetCell.Text != " " && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn) && !IsBlackPiece(targetCell))
-                    {
-                        IsWhiteTurn = true;
-                        return true;
-                    }
-                }
-
-                // Проверка хода для черного короля
-                else if (selectedPiece == '♚')
-                {
-                    if (
-                        (((toRow == fromRow + 1 || toRow == fromRow - 1) && fromColumn == toColumn) ||
-                        ((toColumn == fromColumn + 1 || toColumn == fromColumn - 1) && fromRow == toRow) ||
-                        ((toColumn == fromColumn - 1 && toRow == fromRow + 1) || (toColumn == fromColumn + 1 && toRow == fromRow - 1)) ||
-                        ((toColumn == fromColumn + 1 && toRow == fromRow + 1) || (toColumn == fromColumn - 1 && toRow == fromRow - 1))) &&
-                        (targetCell.Text == " ")
-                       )
-                    {
-                        IsWhiteTurn = true;
-                        return true;
-                    }
-
-                    if (
-                        (((toRow == fromRow + 1 || toRow == fromRow - 1) && fromColumn == toColumn) ||
-                        ((toColumn == fromColumn + 1 || toColumn == fromColumn - 1) && fromRow == toRow) ||
-                        ((toColumn == fromColumn - 1 && toRow == fromRow + 1) || (toColumn == fromColumn + 1 && toRow == fromRow - 1)) ||
-                        ((toColumn == fromColumn + 1 && toRow == fromRow + 1) || (toColumn == fromColumn - 1 && toRow == fromRow - 1))) &&
-                        (targetCell.Text != " ") &&
-                        (!IsBlackPiece(targetCell))
-                       )
-                    {
-                        IsWhiteTurn = true;
-                        return true;
-                    }
-                }
-
-                // Проверка хода для черного коня
-                else if (selectedPiece == '♞')
-                {
-                    if (
-                        (((toRow == fromRow + 1 || toRow == fromRow - 1) && (toColumn == fromColumn - 2 || toColumn == fromColumn + 2)) ||
-                        ((toColumn == fromColumn + 1 || toColumn == fromColumn - 1) && (toRow == fromRow - 2 || toRow == fromRow + 2))) &&
-                        (targetCell.Text == " ")
-                       )
-                    {
-                        IsWhiteTurn = true;
-                        return true;
-                    }
-
-                    // Сруб черного коня
-                    if (
-                        (((toRow == fromRow + 1 || toRow == fromRow - 1) && (toColumn == fromColumn - 2 || toColumn == fromColumn + 2)) ||
-                        ((toColumn == fromColumn + 1 || toColumn == fromColumn - 1) && (toRow == fromRow - 2 || toRow == fromRow + 2))) &&
-                        (targetCell.Text != " ") &&
-                        (!IsBlackPiece(targetCell))
-                       )
-                    {
-                        IsWhiteTurn = true;
-                        return true;
-                    }
-                }
-
-                // Проверка хода для черного слона
-                else if (selectedPiece == '♝')
-                {
-                    if (
-                        (Math.Abs(toRow - fromRow) == Math.Abs(toColumn - fromColumn)) &&
-                        AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn) &&
-                        (targetCell.Text == " ")
-                       )
-                    {
-                        IsWhiteTurn = true;
-                        return true;
-                    }
-
-                    // Сруб черного слона
-                    if (
-                        (Math.Abs(toRow - fromRow) == Math.Abs(toColumn - fromColumn)) &&
-                        AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn) &&
-                        (targetCell.Text != " ") &&
-                        (!IsBlackPiece(targetCell))
-                       )
-                    {
-                        IsWhiteTurn = true;
-                        return true;
-                    }
-                }
-
-                // Проверка хода для черной королевы
-                else if (selectedPiece == '♛')
-                {
-                    if (
-                        (((Math.Abs(toRow - fromRow) == Math.Abs(toColumn - fromColumn)) &&
-                        AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn)) ||
-                        (fromRow == toRow && toColumn != fromColumn && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn)) ||
-                        (fromRow != toRow && toColumn == fromColumn && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn)))
-                        &&
-                        (targetCell.Text == " ")
-                       )
-                    {
-                        IsWhiteTurn = true;
-                        return true;
-                    }
-
-                    // Сруб черной королевы
-                    if (
-                        (((Math.Abs(toRow - fromRow) == Math.Abs(toColumn - fromColumn)) &&
-                        AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn)) ||
-                        (fromRow == toRow && toColumn != fromColumn && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn)) ||
-                        (fromRow != toRow && toColumn == fromColumn && AreIntermediateCellsEmpty(fromRow, fromColumn, toRow, toColumn)))
-                        &&
-                        (targetCell.Text != " ")
-                        &&
-                        (!IsBlackPiece(targetCell))
-                       )
-                    {
-                        IsWhiteTurn = true;
-                        return true;
-                    }
-                }
+                return false;
             }
 
+            Move move = new Move(fromCell, toCell);
+ 
+            if (board.IsValidMove(move))
+            {
+                board.Move(move);
+                return true;
+            }
             return false;
+        }
+
+        private void EndGame()
+        {
+            throw new Exception("победили");
         }
 
         private bool AreIntermediateCellsEmpty(int fromRow, int fromColumn, int toRow, int toColumn)
@@ -487,6 +186,11 @@ namespace uwp
             return true;
         }
 
+        private Border GetCell(int row, int column)
+        {
+            return (Border)ChessGrid.Children.Cast<UIElement>()
+                .FirstOrDefault(c => Grid.GetRow(c) == row && Grid.GetColumn(c) == column);
+        }
 
         private void SwapPieces(TextBlock sourceCell, TextBlock targetCell)
         {
@@ -513,6 +217,5 @@ namespace uwp
         {
             
         }
-
     }
 }

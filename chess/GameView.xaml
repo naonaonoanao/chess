@@ -7,17 +7,31 @@
              mc:Ignorable="d">
 
     <Viewbox>
-        <Grid Name="ChessGrid"  MouseDown="ChessGrid_MouseDown">
+        <Viewbox.Effect>
+            <DropShadowEffect Color="White" Direction="0" ShadowDepth="0" Opacity="1" BlurRadius="30"/>
+        </Viewbox.Effect>
+        <Grid Name="ChessGrid"  MouseDown="ChessGrid_MouseDown" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center">
             <Grid.Resources>
                 <!-- Стиль для основных ячеек шахматной доски -->
                 <Style TargetType="Border" x:Key="ChessCell">
                     <Setter Property="BorderBrush" Value="#aade"/>
                     <Setter Property="BorderThickness" Value="1"/>
                     <Setter Property="AllowDrop" Value="True"/>
-                    <!-- Set a fixed size for the cells -->
                     <Setter Property="Width" Value="20"/>
                     <Setter Property="Height" Value="20"/>
                 </Style>
+                
+                <!-- Стиль для фигур шахматной доски -->
+                <Style x:Key="ChessPieceStyle" TargetType="TextBlock">
+                    <!-- Добавляем свечение -->
+                    <Setter Property="Effect">
+                        <Setter.Value>
+                            <DropShadowEffect BlurRadius="5" Color="Black" ShadowDepth="0"/>
+                        </Setter.Value>
+                    </Setter>
+                    <!-- Другие настройки стиля, если необходимо -->
+                </Style>
+
                 <!-- Стиль для боковых ячеек шахматной доски -->
                 <Style TargetType="Border" x:Key="ChessCellNumberBorder">
                     <Setter Property="BorderBrush" Value="#aade"/>
@@ -25,9 +39,24 @@
                     <Setter Property="BorderThickness" Value="1"/>
                     <Setter Property="AllowDrop" Value="True"/>
                 </Style>
+                
+                <!-- Стиль для символов на боковых ячейках шахматной доски -->
+                <Style x:Key="ChessCellNumber" TargetType="TextBlock">
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontFamily" Value="Comic Sans MS"/>
+                    <Setter Property="FontSize" Value="4"/>
+                    <!-- Добавляем свечение -->
+                    <Setter Property="Effect">
+                        <Setter.Value>
+                            <DropShadowEffect BlurRadius="5" Color="#E69" ShadowDepth="0"/>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+                
                 <!-- Чередование цветов ячеек -->
                 <Style TargetType="Border" BasedOn="{StaticResource ChessCell}" x:Key="ChessCellWhite"  x:Name="ChessCellWhite">
                     <Setter Property="Background" Value="#E69"/>
+                    
                 </Style>
                 <Style TargetType="Border" BasedOn="{StaticResource ChessCell}" x:Key="ChessCellBlack" x:Name="ChessCellBlack">
                     <Setter Property="Background" Value="#746bb9"/>
@@ -39,11 +68,6 @@
                     <Setter Property="Background" Value="Red"/>
                 </Style>
 
-                <Style x:Key="ChessCellNumber" TargetType="TextBlock">
-                    <Setter Property="Foreground" Value="White"/>
-                    <Setter Property="FontFamily" Value="Segoe UI"/>
-                    <!-- Другие настройки стиля, если необходимо -->
-                </Style>
             </Grid.Resources>
 
             <!-- Ячейки шахматной доски -->
@@ -74,117 +98,117 @@
             </Grid.ColumnDefinitions>
 
             <!-- Добавляем ячейки с цифрами слева -->
-            <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="0" Grid.Column="0"></Border>
+            <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="0" Grid.Column="0" CornerRadius="5,0,0,0"></Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="1" Grid.Column="0">
-                <TextBlock Text="8" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="8" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="2" Grid.Column="0">
-                <TextBlock Text="7" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="7" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="3" Grid.Column="0">
-                <TextBlock Text="6" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="6" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="4" Grid.Column="0">
-                <TextBlock Text="5" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="5" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="5" Grid.Column="0">
-                <TextBlock Text="4" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="4" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="6" Grid.Column="0">
-                <TextBlock Text="3" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="3" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="7" Grid.Column="0">
-                <TextBlock Text="2" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="2" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="8" Grid.Column="0">
-                <TextBlock Text="1" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="1" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
-            <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="9" Grid.Column="0"></Border>
+            <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="9" Grid.Column="0" CornerRadius="0,0,0,5"></Border>
 
             <!-- Добавляем ячейки с цифрами справа -->
-            <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="0" Grid.Column="10"></Border>
+            <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="0" Grid.Column="10" CornerRadius="0,5,0,0"></Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="1" Grid.Column="10">
-                <TextBlock Text="8" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="8" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="2" Grid.Column="10">
-                <TextBlock Text="7" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="7" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="3" Grid.Column="10">
-                <TextBlock Text="6" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="6" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="4" Grid.Column="10">
-                <TextBlock Text="5" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="5" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="5" Grid.Column="10">
-                <TextBlock Text="4" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="4" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="6" Grid.Column="10">
-                <TextBlock Text="3" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="3" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="7" Grid.Column="10">
-                <TextBlock Text="2" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="2" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="8" Grid.Column="10">
-                <TextBlock Text="1" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="1" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
-            <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="9" Grid.Column="10"></Border>
+            <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="9" Grid.Column="10" CornerRadius="0,0,5,0"></Border>
 
             <!-- Добавляем ячейки с буквами снизу -->
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="10" Grid.Column="1">
-                <TextBlock Text="a" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="a" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="10" Grid.Column="2">
-                <TextBlock Text="b" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="b" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="10" Grid.Column="3">
-                <TextBlock Text="c" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="c" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="10" Grid.Column="4">
-                <TextBlock Text="d" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="d" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="10" Grid.Column="5">
-                <TextBlock Text="e" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="e" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="10" Grid.Column="6">
-                <TextBlock Text="f" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="f" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="10" Grid.Column="7">
-                <TextBlock Text="g" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="g" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="10" Grid.Column="8">
-                <TextBlock Text="h" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="h" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
 
             <!-- Добавляем ячейки с буквами сверху -->
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="0" Grid.Column="1">
-                <TextBlock Text="a" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="a" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="0" Grid.Column="2">
-                <TextBlock Text="b" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="b" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="0" Grid.Column="3">
-                <TextBlock Text="c" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="c" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="0" Grid.Column="4">
-                <TextBlock Text="d" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="d" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="0" Grid.Column="5">
-                <TextBlock Text="e" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="e" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="0" Grid.Column="6">
-                <TextBlock Text="f" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="f" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="0" Grid.Column="7">
-                <TextBlock Text="g" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="g" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <Border Style="{StaticResource ChessCellNumberBorder}" Grid.Row="0" Grid.Column="8">
-                <TextBlock Text="h" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="h" Style="{StaticResource ChessCellNumber}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
 
             <!-- Создаем ячейки с фигурами -->
             <!-- Верхний ряд (белые фигуры) -->
-            <Border Style="{StaticResource ChessCellWhite}" Grid.Row="1" Grid.Column="1">
-                <TextBlock Text="♖" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <Border Style="{StaticResource ChessCellWhite}" Grid.Row="1" Grid.Column="1" >
+                <TextBlock Text="♖" Style="{StaticResource ChessPieceStyle}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
             <Border Style="{StaticResource ChessCellBlack}" Grid.Row="1" Grid.Column="2">
                 <TextBlock Text="♘" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>

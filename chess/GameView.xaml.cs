@@ -22,14 +22,14 @@ namespace uwp
 
         private Dictionary<int, int> blackRows  = new Dictionary<int, int>()
         {
-            { 0, 1 },
-            { 1, 2 },
-            { 2, 3 },
-            { 3, 4 },
-            { 4, 5 },
-            { 5, 6 },
-            { 6, 7 },
-            { 7, 8 },
+            { 1, 1 },
+            { 2, 2 },
+            { 3, 3 },
+            { 4, 4 },
+            { 5, 5 },
+            { 6, 6 },
+            { 7, 7 },
+            { 8, 8 },
         };
 
         private Dictionary<int, string> blackColumns = new Dictionary<int, string>()

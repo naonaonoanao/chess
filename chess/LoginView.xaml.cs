@@ -26,10 +26,14 @@ namespace uwp
         public LoginView()
         {
             InitializeComponent();
+            UsernameTextBox.TextChanged += UsernameTextBox_TextChanged;
         }
 
         private const int МАКСИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ПАРОЛЯ = 20;
         private const int МИНИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ПАРОЛЯ = 12;
+
+        private const int МАКСИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ЛОГИНА = 25;
+        private const int МИНИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ЛОГИНА = 12;
 
         private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
@@ -71,6 +75,37 @@ namespace uwp
         {
             ErrorMessage.Text = string.Empty;
             ErrorPopupPassword.IsOpen = false;
+        }
+
+        private void UsernameTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox usernameTextBox = sender as TextBox;
+            // Проверка ограничения по количеству символов
+            if (usernameTextBox.Text.Length > МАКСИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ЛОГИНА)
+            {
+                ShowErrorPopupLogin("Слишком длинный логин");
+            }
+            else if (usernameTextBox.Text.Length < МИНИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ЛОГИНА)
+            {
+                ShowErrorPopupLogin("Слишком короткий логин");
+            }
+            else
+            {
+                HideErrorPopupLogin();
+            }
+        }
+
+
+        private void ShowErrorPopupLogin(string errorMessage)
+        {
+            ErrorMessage.Text = errorMessage;
+            ErrorPopupLogin.IsOpen = true;
+        }
+
+        private void HideErrorPopupLogin()
+        {
+            ErrorMessage.Text = string.Empty;
+            ErrorPopupLogin.IsOpen = false;
         }
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)

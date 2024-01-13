@@ -214,5 +214,23 @@
                 <DropShadowEffect Color="White" BlurRadius="50" ShadowDepth="0"/>
             </Border.Effect>
         </Border>
+        <!-- Добавляем всплыващее окно ошибок для пароля -->
+        <Popup x:Name="ErrorPopupPassword" IsOpen="False" PlacementTarget="{Binding ElementName=RegPasswordTextBox}" Placement="Right" StaysOpen="False">
+            <Border Background="White" BorderBrush="Red" BorderThickness="1" CornerRadius="5">
+                <TextBlock Text="{Binding ElementName=ErrorMessage, Path=Text}" Foreground="Red" Padding="5"/>
+            </Border>
+        </Popup>
+        <!-- Добавляем всплыващее окно ошибок для повторения пароля -->
+        <Popup x:Name="ErrorPopupPasswordRepeat" IsOpen="False" PlacementTarget="{Binding ElementName=RegRepeatPasswordTextBox}" Placement="Right" StaysOpen="False">
+            <Border Background="White" BorderBrush="Red" BorderThickness="1" CornerRadius="5">
+                <TextBlock Text="{Binding ElementName=ErrorMessage, Path=Text}" Foreground="Red" Padding="5"/>
+            </Border>
+        </Popup>
+        <!-- Добавляем всплыващее окно ошибок для логина -->
+        <Popup x:Name="ErrorPopupLogin" IsOpen="False" PlacementTarget="{Binding ElementName=RegUsernameTextBox}" Placement="Right" StaysOpen="False">
+            <Border Background="White" BorderBrush="Red" BorderThickness="1" CornerRadius="5">
+                <TextBlock Text="{Binding ElementName=ErrorMessage, Path=Text}" Foreground="Red" Padding="5"/>
+            </Border>
+        </Popup>
     </Grid>
 </UserControl>

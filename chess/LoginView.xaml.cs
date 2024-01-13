@@ -28,6 +28,8 @@ namespace uwp
             InitializeComponent();
         }
 
+        private const int МАКСИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ = 10;
+
         private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
             TextBlock loginTextBlock = PasswordBox.Template.FindName("LoginTextBlock", PasswordBox) as TextBlock;
@@ -39,6 +41,27 @@ namespace uwp
             {
                 loginTextBlock.Visibility = Visibility.Collapsed;
             }
+            // Проверка ограничения по количеству символов
+            if (PasswordBox.Password.Length > МАКСИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ)
+            {
+                ShowErrorPopup("Превышено ограничение по символам для пароля");
+            }
+            else
+            {
+                HideErrorPopup();
+            }
+        }
+
+        private void ShowErrorPopup(string errorMessage)
+        {
+            ErrorMessage.Text = errorMessage;
+            ErrorPopup.IsOpen = true;
+        }
+
+        private void HideErrorPopup()
+        {
+            ErrorMessage.Text = string.Empty;
+            ErrorPopup.IsOpen = false;
         }
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
@@ -46,6 +69,23 @@ namespace uwp
             var userRepository = new UserRepository();
             string username = UsernameTextBox.Text;
             string password = new NetworkCredential(string.Empty, PasswordBox.SecurePassword).Password;
+            
+
+            if (username == string.Empty)
+            {
+                ErrorMessage.Text = "Введите логин!";
+                ErrorMessage.Visibility = Visibility.Visible;
+
+                return;
+            }
+
+            if (password == string.Empty)
+            {
+                ErrorMessage.Text = "Введите пароль!";
+                ErrorMessage.Visibility = Visibility.Visible;
+
+                return;
+            }
 
             if (userRepository.VerifyUser(username, password))
             {

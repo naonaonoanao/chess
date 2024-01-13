@@ -28,7 +28,8 @@ namespace uwp
             InitializeComponent();
         }
 
-        private const int МАКСИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ = 10;
+        private const int МАКСИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ПАРОЛЯ = 20;
+        private const int МИНИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ПАРОЛЯ = 12;
 
         private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
@@ -42,26 +43,34 @@ namespace uwp
                 loginTextBlock.Visibility = Visibility.Collapsed;
             }
             // Проверка ограничения по количеству символов
-            if (PasswordBox.Password.Length > МАКСИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ)
+            if (PasswordBox.Password.Length > МАКСИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ПАРОЛЯ)
             {
-                ShowErrorPopup("Превышено ограничение по символам для пароля");
+                ShowErrorPopupPassword("Слишком длинный пароль");
             }
             else
             {
-                HideErrorPopup();
+                HideErrorPopupPassword();
+            }
+            if (PasswordBox.Password.Length < МИНИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ПАРОЛЯ)
+            {
+                ShowErrorPopupPassword("Слишком короткий пароль");
+            }
+            else
+            {
+                HideErrorPopupPassword();
             }
         }
 
-        private void ShowErrorPopup(string errorMessage)
+        private void ShowErrorPopupPassword(string errorMessage)
         {
             ErrorMessage.Text = errorMessage;
-            ErrorPopup.IsOpen = true;
+            ErrorPopupPassword.IsOpen = true;
         }
 
-        private void HideErrorPopup()
+        private void HideErrorPopupPassword()
         {
             ErrorMessage.Text = string.Empty;
-            ErrorPopup.IsOpen = false;
+            ErrorPopupPassword.IsOpen = false;
         }
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)

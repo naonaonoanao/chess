@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решен
 	ProjectSection(SolutionItems) = preProject
 		..\..\..\OneDrive\Рабочий стол\fingerprint.pb = ..\..\..\OneDrive\Рабочий стол\fingerprint.pb
 		..\..\..\OneDrive\Рабочий стол\keras_metadata.pb = ..\..\..\OneDrive\Рабочий стол\keras_metadata.pb
+		..\..\..\Downloads\model = ..\..\..\Downloads\model
 		..\..\..\OneDrive\Рабочий стол\saved_model.pb = ..\..\..\OneDrive\Рабочий стол\saved_model.pb
 		..\..\..\OneDrive\Рабочий стол\variables\variables.data-00000-of-00001 = ..\..\..\OneDrive\Рабочий стол\variables\variables.data-00000-of-00001
 		..\..\..\OneDrive\Рабочий стол\variables\variables.index = ..\..\..\OneDrive\Рабочий стол\variables\variables.index

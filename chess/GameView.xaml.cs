@@ -1,4 +1,8 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
+using System.Net.Http;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -13,6 +17,8 @@ namespace uwp
         {
             InitializeComponent();
         }
+
+        private const string ServerUrl = "http://localhost:8000/";
 
         private TextBlock? selectedCell;
         private Style? selectedPrevStyle;
@@ -43,6 +49,16 @@ namespace uwp
             { 7, "b" },
             { 8, "a" },
         };
+
+        private Dictionary<int, int> ReversedDictionaryRows(Dictionary<int, int> original)
+        {
+            return original.ToDictionary(kvp => kvp.Value, kvp => kvp.Key);
+        }
+
+        private Dictionary<string, int> ReversedDictionaryColumns(Dictionary<int, string> original)
+        {
+            return original.ToDictionary(kvp => kvp.Value, kvp => kvp.Key);
+        }
 
         private void ChessGrid_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -92,6 +108,19 @@ namespace uwp
             if (IsValidMove(fromRow, fromColumn, toRow, toColumn, targetCell))
             {
                 SwapPieces(selectedCell, targetCell);
+
+                string userMove = $"{blackColumns[fromColumn]}{blackRows[fromRow]}{blackColumns[toColumn]}{blackRows[toRow]}";
+                Debug.WriteLine(userMove);
+                Task<string> userMoveTask = Task.Run(() => MakeMove($"make-user-move/?move={userMove}", ""));
+                userMoveTask.Wait(); // Блокируем основной поток до завершения задачи
+                string userMoveResponse = userMoveTask.Result;
+
+                // Отправка запроса на получение хода от нейросети
+                Task<string> neuroMoveTask = Task.Run(() => MakeMove("make-neuro-move", ""));
+                neuroMoveTask.Wait(); // Блокируем основной поток до завершения задачи
+                string neuroMoveResponse = neuroMoveTask.Result;
+
+                ApplyNeuroMove(neuroMoveResponse);
             }
 
             selectedCell = null;
@@ -102,18 +131,83 @@ namespace uwp
             }
         }
 
+        private string MakeMove(string endpoint, string move)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                string url = $"{ServerUrl}{endpoint}";
+                var content = new StringContent(move, Encoding.UTF8, "application/json");
+                var response = client.PostAsync(url, content).Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return response.Content.ReadAsStringAsync().Result;
+                }
+                else
+                {
+                    // Обработка ошибок
+                    Debug.WriteLine($"Error: {response.StatusCode}");
+                    return string.Empty;
+                }
+            }
+        }
+
+        private void ApplyNeuroMove(string neuroMove)
+        {
+            Dictionary<int, int> reversedBlackRows = ReversedDictionaryRows(blackRows);
+            Dictionary<string, int> reversedBlackColumns = ReversedDictionaryColumns(blackColumns);
+
+            // Получаем значение хода нейросети
+            JsonDocument jsonDocument = JsonDocument.Parse(neuroMove);
+            jsonDocument.RootElement.TryGetProperty("neuro_move", out JsonElement neuroMoveElement);
+
+            string neuroMoveValue = neuroMoveElement.GetString();
+
+            // Применяем ход к доске
+            // Например, парсинг хода и применение к доске
+            int fromRow = reversedBlackRows[int.Parse(neuroMoveValue[1].ToString())];
+            int fromColumn = reversedBlackColumns[neuroMoveValue[0].ToString()];
+            int toRow = reversedBlackRows[int.Parse(neuroMoveValue[3].ToString())];
+            int toColumn = reversedBlackColumns[neuroMoveValue[2].ToString()];
+
+            // Применяем ход к доске, используя ваши существующие методы
+            // Например:
+            string fromCell = blackColumns[fromColumn] + blackRows[fromRow];
+            string toCell = blackColumns[toColumn] + blackRows[toRow];
+
+            Move move = new Move(fromCell, toCell);
+            board.Move(move);
+
+            if (board.IsEndGame)
+            {
+                EndGame();
+            }
+
+            SwapPieces(GetCell(fromRow, fromColumn).Child as TextBlock, GetCell(toRow, toColumn).Child as TextBlock);
+        }
+
+        private Border GetCell(int row, int column)
+        {
+            return (Border)ChessGrid.Children.Cast<UIElement>()
+                .FirstOrDefault(c => Grid.GetRow(c) == row && Grid.GetColumn(c) == column);
+        }
+
+
         private bool IsValidMove(int fromRow, int fromColumn, int toRow, int toColumn, TextBlock targetCell)
         {
             string fromCell = blackColumns[fromColumn] + blackRows[fromRow];
             string toCell = blackColumns[toColumn] + blackRows[toRow];
-            
+
+
             if (board[fromCell] is null)
             {
                 return false;
             }
-
+            
             Move move = new Move(fromCell, toCell);
- 
+
+            Debug.WriteLine(move.ToString());
+
             if (board.IsValidMove(move))
             {
                 board.Move(move);
@@ -125,52 +219,6 @@ namespace uwp
         private void EndGame()
         {
             throw new Exception("победили");
-        }
-
-        private bool AreIntermediateCellsEmpty(int fromRow, int fromColumn, int toRow, int toColumn)
-        {
-            if (fromRow != toRow && toColumn == fromColumn) // Вертикальное перемещение
-            {
-                int step = (toRow > fromRow) ? 1 : -1; // Определяем направление движения
-
-                for (int row = fromRow + step; row != toRow; row += step)
-                {
-                    if (!IsCellEmpty(row, fromColumn))
-                    {
-                        // Промежуточная клетка занята, ход недопустим
-                        return false;
-                    }
-                }
-            }
-            else if (fromRow == toRow && toColumn != fromColumn) // Горизонтальное перемещение
-            {
-                int step = (toColumn > fromColumn) ? 1 : -1; // Определяем направление движения
-
-                for (int col = fromColumn + step; col != toColumn; col += step)
-                {
-                    if (!IsCellEmpty(fromRow, col))
-                    {
-                        // Промежуточная клетка занята, ход недопустим
-                        return false;
-                    }
-                }
-            }
-            else if (Math.Abs(toRow - fromRow) == Math.Abs(toColumn - fromColumn)) // Диагональное перемещение
-            {
-                int rowStep = (toRow > fromRow) ? 1 : -1; // Определяем направление движения по вертикали
-                int colStep = (toColumn > fromColumn) ? 1 : -1; // Определяем направление движения по горизонтали
-
-                for (int row = fromRow + rowStep, col = fromColumn + colStep; row != toRow && col != toColumn; row += rowStep, col += colStep)
-                {
-                    if (!IsCellEmpty(row, col))
-                    {
-                        // Промежуточная клетка занята, ход недопустим
-                        return false;
-                    }
-                }
-            }
-
-            return true;
         }
 
         private bool IsCellEmpty(int row, int column)
@@ -186,12 +234,6 @@ namespace uwp
             return true;
         }
 
-        private Border GetCell(int row, int column)
-        {
-            return (Border)ChessGrid.Children.Cast<UIElement>()
-                .FirstOrDefault(c => Grid.GetRow(c) == row && Grid.GetColumn(c) == column);
-        }
-
         private void SwapPieces(TextBlock sourceCell, TextBlock targetCell)
         {
             var oldForeground = sourceCell.Foreground;
@@ -200,16 +242,6 @@ namespace uwp
 
             targetCell.Text = sourceCell.Text;
             sourceCell.Text = " ";
-        }
-
-        private char GetSymbolAt(int row, int column)
-        {
-            return ((TextBlock)ChessGrid.Children[row * 8 + column]).Text[0];
-        }
-
-        private bool IsBlackPiece(TextBlock targetCell)
-        {
-            return targetCell.Foreground == Brushes.Black;
         }
 
         //Выбор новой фигуры для пешки

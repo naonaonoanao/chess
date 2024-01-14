@@ -26,7 +26,35 @@
                 <Setter Property="CornerRadius" Value="10"/>
                 <!-- Скругление углов -->
             </Style>
-            
+
+            <!-- Стиль для обычной кнопки -->
+            <Style x:Key="CustomButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="#E69"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="Padding" Value="10"/>
+                <Setter Property="BorderBrush" Value="#adee"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border 
+                    Background="{TemplateBinding Background}" 
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="5" 
+                    Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#746bb9"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
         </Grid.Resources>
         <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center">
             
@@ -463,24 +491,16 @@
             </StackPanel>
         </Border>
 
+        <Button Content="Мои игры" FontFamily="Comic Sans MS" FontWeight="Bold" Style="{StaticResource CustomButtonStyle}" Click="ToggleBorderButton_Click" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,10,60"/>
 
+        <Button Content="Меню" FontFamily="Comic Sans MS" FontWeight="Bold" Style="{StaticResource CustomButtonStyle}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10"/>
+        <Button Content="Сдаться" FontFamily="Comic Sans MS" FontWeight="Bold" Style="{StaticResource CustomButtonStyle}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="80,0,20,10"/>
 
-
-
-        <Border Style="{StaticResource AddirionalLeftBlock}" Width="250" Height="Auto" HorizontalAlignment="Left" Margin="60,60,90,60">
+        <Border x:Name="animatedBorder" Style="{StaticResource AddirionalLeftBlock}" Width="250" Height="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="60,0,90,60">
             <Border.Background>
                 <SolidColorBrush Color="#33000000"/>
             </Border.Background>
-
-            <Border.Effect>
-                <DropShadowEffect Color="#aade" Direction="0" BlurRadius="20" ShadowDepth="0"/>
-            </Border.Effect>
-                
-            <StackPanel>
-                
-            </StackPanel>
         </Border>
-
     </Grid>
 
 

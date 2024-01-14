@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using Chess;
 
 namespace uwp
@@ -248,6 +249,49 @@ namespace uwp
         private void PromotePawn(TextBlock targetCell)
         {
             
+        }
+
+        private bool isBorderVisible = false;
+
+        private void ToggleBorderButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (isBorderVisible)
+            {
+                // Если бордер видим, скрываем его
+                HideBorder();
+            }
+            else
+            {
+                // Если бордер скрыт, показываем его
+                ShowBorder();
+            }
+
+            // Инвертируем состояние видимости
+            isBorderVisible = !isBorderVisible;
+        }
+
+        private void ShowBorder()
+        {
+            // Создание анимации изменения высоты
+            DoubleAnimation heightAnimation = new DoubleAnimation();
+            heightAnimation.From = 0;
+            heightAnimation.To = 541; // Здесь укажите желаемую высоту бордера
+            heightAnimation.Duration = TimeSpan.FromSeconds(0.5);
+
+            // Применение анимации к высоте бордера
+            animatedBorder.BeginAnimation(Border.HeightProperty, heightAnimation);
+        }
+
+        private void HideBorder()
+        {
+            // Создание анимации изменения высоты
+            DoubleAnimation heightAnimation = new DoubleAnimation();
+            heightAnimation.From = 541; // Здесь укажите текущую высоту бордера
+            heightAnimation.To = 0;
+            heightAnimation.Duration = TimeSpan.FromSeconds(0.5);
+
+            // Применение анимации к высоте бордера
+            animatedBorder.BeginAnimation(Border.HeightProperty, heightAnimation);
         }
     }
 }

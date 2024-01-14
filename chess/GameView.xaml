@@ -13,17 +13,23 @@
         <Grid.Resources>
             <!-- Стиль для дополнительного правого блока -->
             <Style x:Key="AdditionalRightBlockStyle" TargetType="Border">
+                <Setter Property="Background" Value="#80aadd"/>
+                <!-- Задаем фоновый цвет -->
+                <Setter Property="CornerRadius" Value="10"/>
+                <!-- Скругление углов -->
+            </Style>
+            
+            <!-- Стиль для дополнительного левого блока-->
+            <Style x:Key="AddirionalLeftBlock" TargetType="Border">
                 <Setter Property="Background" Value="#aade"/>
                 <!-- Задаем фоновый цвет -->
                 <Setter Property="CornerRadius" Value="10"/>
                 <!-- Скругление углов -->
-                
             </Style>
+            
         </Grid.Resources>
         <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Viewbox.Effect>
-                <DropShadowEffect Color="White" Direction="0" ShadowDepth="0" Opacity="1" BlurRadius="30"/>
-            </Viewbox.Effect>
+            
             <Grid Name="ChessGrid"  MouseDown="ChessGrid_MouseDown" Margin="7" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Grid.Resources>
                     <!-- Стиль для основных ячеек шахматной доски -->
@@ -435,17 +441,43 @@
         </Viewbox>
 
 
+        <Border Style="{StaticResource AdditionalRightBlockStyle}" Width="300" Height="Auto" HorizontalAlignment="Right" Margin="90,60,70,60">
+            <Border.Background>
+                <SolidColorBrush Color="#aade"/>
+                <!-- Прозрачный тёмный цвет (Alpha, R, G, B) -->
+            </Border.Background>
 
-        <Border Style="{StaticResource AdditionalRightBlockStyle}" Width="220" Height="Auto" HorizontalAlignment="Right" Margin="1,60,150,60">
+            
+
             <StackPanel>
                 <!-- Верхний сепаратор -->
-                <Separator VerticalAlignment="Top" Height="250" Background="Black"/>
-                <TextBlock Text="Дополнительный блок" Foreground="Black"/>
+                <Separator VerticalAlignment="Top" Height="10" Background="#adee"/>
+
                 <!-- Центральная часть блока -->
+                <TextBlock Text="История ходов" Foreground="White" FontFamily="Comic Sans MS" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 <!-- Ваше содержимое блока -->
                 <!-- Например, текст, кнопки и т.д. -->
+
                 <!-- Нижний сепаратор -->
-                <Separator VerticalAlignment="Bottom" Height="300" Background="Black"/>
+                <Separator VerticalAlignment="Bottom" Height="10" Background="#adee"/>
+            </StackPanel>
+        </Border>
+
+
+
+
+
+        <Border Style="{StaticResource AddirionalLeftBlock}" Width="250" Height="Auto" HorizontalAlignment="Left" Margin="60,60,90,60">
+            <Border.Background>
+                <SolidColorBrush Color="#33000000"/>
+            </Border.Background>
+
+            <Border.Effect>
+                <DropShadowEffect Color="#aade" Direction="0" BlurRadius="20" ShadowDepth="0"/>
+            </Border.Effect>
+                
+            <StackPanel>
+                
             </StackPanel>
         </Border>
 

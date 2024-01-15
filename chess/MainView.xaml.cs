@@ -36,6 +36,13 @@ namespace uwp
 
             loginView.RequestChangeContent += RegistrationView_RequestChangeContent;
             registrationView.RequestChangeContent += RegistrationView_RequestChangeContent;
+            forgotPasswordView.RequestChangeContent += RegistrationView_RequestChangeContent;
+            menuView.RequestChangeContent += RegistrationView_RequestChangeContent;
+        }
+
+        private void ForgotPasswordView_RequestChangeContent(object? sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         private void RegistrationView_RequestChangeContent(object sender, EventArgs e)
@@ -57,6 +64,10 @@ namespace uwp
             else if (args.windowName == "boardWindow")
             {
                 MainContent.Content = boardView;
+            }
+            else if (args.windowName == "menuWindow")
+            {
+                MainContent.Content = menuView;
             }
         }
     }

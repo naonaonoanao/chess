@@ -19,9 +19,42 @@ namespace uwp
     /// </summary>
     public partial class MenuView : UserControl
     {
+        public event EventHandler RequestChangeContent;
         public MenuView()
         {
             InitializeComponent();
+        }
+
+        private void BlackColor_Click(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine("Black color clicked");
+            // Здесь добавьте свою логику для обработки клика на черный цвет
+        }
+
+        private void WhiteColor_Click(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine("White color clicked");
+            // Здесь добавьте свою логику для обработки клика на белый цвет
+        }
+
+        private void Difficulty_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Console.WriteLine("Difficulty changed");
+            // Здесь добавьте свою логику для обработки изменения уровня сложности
+        }
+
+        private void CreateGame_Click(object sender, RoutedEventArgs e)
+        {
+            string windowName = "boardWindow";
+            WindowEventArgs args = new WindowEventArgs(windowName);
+
+            RequestChangeContent?.Invoke(this, args);
+        }
+
+        private void ContinueGame_Click(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine("Continue game clicked");
+            // Здесь добавьте свою логику для продолжения игры
         }
     }
 }

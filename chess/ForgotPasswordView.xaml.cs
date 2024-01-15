@@ -14,20 +14,23 @@ using System.Windows.Shapes;
 
 namespace uwp
 {
-    /// <summary>
-    /// Логика взаимодействия для ForgotPasswordView.xaml
-    /// </summary>
     public partial class ForgotPasswordView : UserControl
     {
+        public event EventHandler RequestChangeContent;
         public ForgotPasswordView()
         {
             InitializeComponent();
         }
 
-        private void LoginWindow(object sender, RoutedEventArgs e)
+
+        private void BackToLoginWindow(object sender, RoutedEventArgs e)
         {
+            RegUsernameTextBox.Clear();
+
             string windowName = "loginWindow";
             WindowEventArgs args = new WindowEventArgs(windowName);
+
+            RequestChangeContent?.Invoke(this, args);
         }
     }
 }

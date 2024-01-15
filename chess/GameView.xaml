@@ -20,11 +20,15 @@
             </Style>
             
             <!-- Стиль для дополнительного левого блока-->
-            <Style x:Key="AddirionalLeftBlock" TargetType="Border">
-                <Setter Property="Background" Value="#aade"/>
+            <Style x:Key="AdditionalLeftBlock" TargetType="Border">
+                <Setter Property="Background" Value="#33000000"/>
                 <!-- Задаем фоновый цвет -->
-                <Setter Property="CornerRadius" Value="10"/>
+                <Setter Property="CornerRadius" Value="10,10,5,5"/>
                 <!-- Скругление углов -->
+                <Setter Property="BorderBrush" Value="#adee"/>
+                <!-- Цвет обводки -->
+                <Setter Property="BorderThickness" Value="1"/>
+                <!-- Толщина обводки -->
             </Style>
 
             <!-- Стиль для обычной кнопки -->
@@ -472,34 +476,57 @@
         <Border Style="{StaticResource AdditionalRightBlockStyle}" Width="300" Height="Auto" HorizontalAlignment="Right" Margin="90,60,70,60">
             <Border.Background>
                 <SolidColorBrush Color="#aade"/>
-                <!-- Прозрачный тёмный цвет (Alpha, R, G, B) -->
             </Border.Background>
 
-            
-
             <StackPanel>
-                <!-- Верхний сепаратор -->
-                <Separator VerticalAlignment="Top" Height="10" Background="#adee"/>
+                <!-- Изображение робота в белом круге -->
+                <Border Width="100" Height="100" CornerRadius="60" Background="White" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,19,0,0">
+                    <Image Source="C:\Users\egoro\source\repos\chess\chess\image\ретро_робот1 (2).png" Width="80" Height="80" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform"/>
+                </Border>
+
+                <!-- Верхний сепаратор после изображения робота -->
+                <Separator Height="10" Background="#adee" Margin="0,20,0,0"/>
 
                 <!-- Центральная часть блока -->
-                <TextBlock Text="История ходов" Foreground="White" FontFamily="Comic Sans MS" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="История ходов" Foreground="White" FontFamily="Comic Sans MS" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,20,0,20"/>
                 <!-- Ваше содержимое блока -->
                 <!-- Например, текст, кнопки и т.д. -->
 
-                <!-- Нижний сепаратор -->
-                <Separator VerticalAlignment="Bottom" Height="10" Background="#adee"/>
+                <!-- Нижний сепаратор перед изображением человека -->
+                <Separator Height="10" Background="#adee" Margin="0,0,0,-650"/>
+
+                <!-- Изображение человека в белом круге -->
+                <Border Width="100" Height="100" CornerRadius="60" Background="White" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,349,0,20">
+                    <Image Source="C:\Users\egoro\source\repos\chess\chess\image\человек1.png" Width="80" Height="80" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
             </StackPanel>
         </Border>
 
-        <Button Content="Мои игры" FontFamily="Comic Sans MS" FontWeight="Bold" Style="{StaticResource CustomButtonStyle}" Click="ToggleBorderButton_Click" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,10,60"/>
+        <Button Content="Мои игры" FontFamily="Comic Sans MS" FontWeight="Bold" FontSize="25" Style="{StaticResource CustomButtonStyle}" Click="ToggleBorderButton_Click" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="47,0,10,130" Width="155" Height="55">
+            <Button.ContentTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" FontSize="19"/>
+                </DataTemplate>
+            </Button.ContentTemplate>
+        </Button>
 
-        <Button Content="Меню" FontFamily="Comic Sans MS" FontWeight="Bold" Style="{StaticResource CustomButtonStyle}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10"/>
-        <Button Content="Сдаться" FontFamily="Comic Sans MS" FontWeight="Bold" Style="{StaticResource CustomButtonStyle}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="80,0,20,10"/>
+        <Button Content="Меню" FontFamily="Comic Sans MS" FontWeight="Bold" Style="{StaticResource CustomButtonStyle}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="47,0,10,60" Width="155" Height="55">
+            <Button.ContentTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" FontSize="19"/>
+                </DataTemplate>
+            </Button.ContentTemplate>
+        </Button>
+        <Button Content="Сдаться" FontFamily="Comic Sans MS" FontWeight="Bold" Style="{StaticResource CustomButtonStyle}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="220,0,20,60" Width="155" Height="55">
+            <Button.ContentTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" FontSize="19"/>
+                </DataTemplate>
+            </Button.ContentTemplate>
+        </Button>
 
-        <Border x:Name="animatedBorder" Style="{StaticResource AddirionalLeftBlock}" Width="250" Height="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="60,0,90,60">
-            <Border.Background>
-                <SolidColorBrush Color="#33000000"/>
-            </Border.Background>
+        <Border x:Name="animatedBorder" Style="{StaticResource AdditionalLeftBlock}" Width="327" Height="100" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="47,0,10,190">
+
         </Border>
     </Grid>
 

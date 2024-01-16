@@ -46,6 +46,39 @@
             </Setter>
         </Style>
 
+        <Style x:Key="LinkBackButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="5,2" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+                            <TextBlock Text="{TemplateBinding Content}">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="TextDecorations" Value="None"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource TemplatedParent}}" Value="True">
+                                                <Setter Property="TextDecorations" Value="Underline"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!-- Добавлен стиль для основной сетки для управления фоном и размером -->
         <Style x:Key="MainGridStyle" TargetType="Grid">
             <Setter Property="Background" Value="Transparent"/>
@@ -107,6 +140,7 @@
                     <StackPanel Width="20"/>
                     <Button Content="Продолжить игру" Width="163" Click="ContinueGame_Click" Height="50" Style="{StaticResource CreateGameButton}" FontSize="15"/>
                 </StackPanel>
+                <Button Content="Назад" Click="BackToLoginWindow" Style="{StaticResource LinkBackButtonStyle}"/>
             </StackPanel>
             <Border.Effect>
                 <DropShadowEffect Color="White" BlurRadius="50" ShadowDepth="0"/>

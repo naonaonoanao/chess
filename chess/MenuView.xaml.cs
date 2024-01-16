@@ -56,5 +56,13 @@ namespace uwp
             Console.WriteLine("Continue game clicked");
             // Здесь добавьте свою логику для продолжения игры
         }
+
+        private void BackToLoginWindow(object sender, RoutedEventArgs e)
+        {
+            string windowName = "loginWindow";
+            WindowEventArgs args = new WindowEventArgs(windowName);
+
+            RequestChangeContent?.Invoke(this, args);
+        }
     }
 }

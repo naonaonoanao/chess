@@ -162,56 +162,106 @@ namespace uwp
             string password = new NetworkCredential(string.Empty, RegPasswordTextBox.SecurePassword).Password;
             string repeatPassword = new NetworkCredential(string.Empty, RegRepeatPasswordTextBox.SecurePassword).Password;
 
-            if (password != repeatPassword)
-            {
-                ErrorMessage.Text = "Пароли не совпадают!";
-                ErrorMessage.Visibility = Visibility.Visible;
+            // Переменные для отслеживания статуса ошибок
+            bool isLoginError = false;
+            bool isPasswordError = false;
+            bool isRepeatPasswordError = false;
 
-                return;
+            // Проверка длины логина
+            if (username.Length > МАКСИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ЛОГИНА || username.Length < МИНИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ЛОГИНА)
+            {
+                isLoginError = true;
             }
 
-            if (username == string.Empty)
+            // Проверка длины пароля
+            if (password.Length > МАКСИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ПАРОЛЯ || password.Length < МИНИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ПАРОЛЯ)
             {
-                ErrorMessage.Text = "Введите логин!";
-                ErrorMessage.Visibility = Visibility.Visible;
-
-                return;
+                isPasswordError = true;
             }
 
-            if (password == string.Empty)
+            if (repeatPassword.Length > МАКСИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ПАРОЛЯ || password.Length < МИНИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ПАРОЛЯ)
             {
-                ErrorMessage.Text = "Введите пароль!";
-                ErrorMessage.Visibility = Visibility.Visible;
+                isRepeatPasswordError = true;
+            }    
 
-                return;
+            // Отображение соответствующих окон ошибок
+            if (isLoginError && isPasswordError)
+            {
+                ShowErrorPopupLogin("Недопустимая длина логина");
+                ShowErrorPopupPassword("Недопустимая длина пароля");
             }
-
-            if (password != repeatPassword)
+            else if (isLoginError)
             {
-                ErrorMessage.Text = "Пароли не совпадают!";
-                ErrorMessage.Visibility = Visibility.Visible;
-
-                return;
+                ShowErrorPopupLogin("Недопустимая длина логина");
+                HideErrorPopupPassword(); // Скрываем окно ошибок для пароля
             }
-
-            if (!(bool)conditionsBox.IsChecked)
+            else if (isPasswordError)
             {
-                ErrorMessage.Text = "Подтвердите, что вы прочитали соглашение!";
-                ErrorMessage.Visibility = Visibility.Visible;
-
-                return;
+                ShowErrorPopupPassword("Недопустимая длина пароля");
+                HideErrorPopupLogin(); // Скрываем окно ошибок для логина
             }
-
-            try
+            else if (isRepeatPasswordError)
             {
-                userRepository.AddUser(username, password);
-                ErrorMessage.Text = "Регистрация успешна";
-                ErrorMessage.Visibility = Visibility.Visible;
+                ShowErrorPopupPassword("Недопустимая длина пароля");
+                HideErrorPopupLogin(); // Скрываем окно ошибок для логина
             }
-            catch (Exception ex)
+            else
             {
-                ErrorMessage.Text = "Вы уже зарегистрированы!";
-                ErrorMessage.Visibility = Visibility.Visible;
+                // Оба условия не нарушены, продолжаем проверку и вход
+                HideErrorPopupLogin(); // Скрываем окно ошибок для логина
+                HideErrorPopupPassword(); // Скрываем окно ошибок для пароля
+
+                if (password != repeatPassword)
+                {
+                    ErrorMessage.Text = "Пароли не совпадают!";
+                    ErrorMessage.Visibility = Visibility.Visible;
+
+                    return;
+                }
+
+                if (username == string.Empty)
+                {
+                    ErrorMessage.Text = "Введите логин!";
+                    ErrorMessage.Visibility = Visibility.Visible;
+
+                    return;
+                }
+
+                if (password == string.Empty)
+                {
+                    ErrorMessage.Text = "Введите пароль!";
+                    ErrorMessage.Visibility = Visibility.Visible;
+
+                    return;
+                }
+
+                if (password != repeatPassword)
+                {
+                    ErrorMessage.Text = "Пароли не совпадают!";
+                    ErrorMessage.Visibility = Visibility.Visible;
+
+                    return;
+                }
+
+                if (!(bool)conditionsBox.IsChecked)
+                {
+                    ErrorMessage.Text = "Подтвердите, что вы прочитали соглашение!";
+                    ErrorMessage.Visibility = Visibility.Visible;
+
+                    return;
+                }
+
+                try
+                {
+                    userRepository.AddUser(username, password);
+                    ErrorMessage.Text = "Регистрация успешна";
+                    ErrorMessage.Visibility = Visibility.Visible;
+                }
+                catch (Exception ex)
+                {
+                    ErrorMessage.Text = "Вы уже зарегистрированы!";
+                    ErrorMessage.Visibility = Visibility.Visible;
+                }
             }
         }
     }

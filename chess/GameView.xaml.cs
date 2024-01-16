@@ -14,6 +14,7 @@ namespace uwp
 {
     public partial class GameView : UserControl
     {
+        public event EventHandler RequestChangeContent;
         public GameView()
         {
             InitializeComponent();
@@ -292,6 +293,14 @@ namespace uwp
 
             // Применение анимации к высоте бордера
             animatedBorder.BeginAnimation(Border.HeightProperty, heightAnimation);
+        }
+
+        private void BackToMenu_Click(object sender, RoutedEventArgs e)
+        {
+            string windowName = "menuWindow";
+            WindowEventArgs args = new WindowEventArgs(windowName);
+
+            RequestChangeContent?.Invoke(this, args);
         }
     }
 }

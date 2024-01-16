@@ -9,12 +9,12 @@ namespace uwp
     public class ChessGame
     {
         private GameView gameView; // Ссылка на ваш контрол для обновления интерфейса
-        private NeuralNetworkModel neuralNetwork; // Замените на ваш класс с обученной моделью
+
 
         public ChessGame(GameView gameView)
         {
             this.gameView = gameView;
-            this.neuralNetwork = new NeuralNetworkModel(); // Инициализируйте вашу обученную модель здесь
+
         }
 
         public void MakeMove()

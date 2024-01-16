@@ -38,6 +38,7 @@ namespace uwp
             registrationView.RequestChangeContent += RegistrationView_RequestChangeContent;
             forgotPasswordView.RequestChangeContent += RegistrationView_RequestChangeContent;
             menuView.RequestChangeContent += RegistrationView_RequestChangeContent;
+            boardView.RequestChangeContent += RegistrationView_RequestChangeContent;
         }
 
         private void ForgotPasswordView_RequestChangeContent(object? sender, EventArgs e)

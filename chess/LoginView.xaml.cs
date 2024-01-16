@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -30,10 +31,12 @@ namespace uwp
         }
 
         private const int МАКСИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ПАРОЛЯ = 20;
-        private const int МИНИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ПАРОЛЯ = 12;
+        //private const int МИНИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ПАРОЛЯ = 12;
+        private const int МИНИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ПАРОЛЯ = 0;
 
         private const int МАКСИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ЛОГИНА = 25;
-        private const int МИНИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ЛОГИНА = 12;
+        //private const int МИНИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ЛОГИНА = 12;
+        private const int МИНИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ЛОГИНА = 0;
 
         private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
@@ -50,12 +53,8 @@ namespace uwp
             if (PasswordBox.Password.Length > МАКСИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ПАРОЛЯ)
             {
                 ShowErrorPopupPassword("Слишком длинный пароль");
-            }
-            else
-            {
-                HideErrorPopupPassword();
-            }
-            if (PasswordBox.Password.Length < МИНИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ПАРОЛЯ)
+            } 
+            else if (PasswordBox.Password.Length < МИНИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ПАРОЛЯ)
             {
                 ShowErrorPopupPassword("Слишком короткий пароль");
             }
@@ -113,50 +112,85 @@ namespace uwp
             var userRepository = new UserRepository();
             string username = UsernameTextBox.Text;
             string password = new NetworkCredential(string.Empty, PasswordBox.SecurePassword).Password;
-            
 
-            if (username == string.Empty)
+            // Переменные для отслеживания статуса ошибок
+            bool isLoginError = false;
+            bool isPasswordError = false;
+
+            // Проверка длины логина
+            if (username.Length > МАКСИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ЛОГИНА || username.Length < МИНИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ЛОГИНА)
             {
-                ErrorMessage.Text = "Введите логин!";
-                ErrorMessage.Visibility = Visibility.Visible;
-
-                return;
+                isLoginError = true;
             }
 
-            if (password == string.Empty)
+            // Проверка длины пароля
+            if (password.Length > МАКСИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ПАРОЛЯ || password.Length < МИНИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ПАРОЛЯ)
             {
-                ErrorMessage.Text = "Введите пароль!";
-                ErrorMessage.Visibility = Visibility.Visible;
-
-                return;
+                isPasswordError = true;
             }
 
-            if (userRepository.VerifyUser(username, password))
+            // Отображение соответствующих окон ошибок
+            if (isLoginError && isPasswordError)
             {
-                failedLoginAttempts = 0;
-                ErrorMessage.Text = "Вход успешен";
-                ErrorMessage.Visibility = Visibility.Visible;
-
-                // Временный переход напрямую на доску
-
-                UsernameTextBox.Clear();
-                PasswordBox.Clear();
-                RememberPasswordBox.IsChecked = false;
-
-                ErrorMessage.Visibility = Visibility.Collapsed;
-
-                string windowName = "boardWindow";
-                WindowEventArgs args = new WindowEventArgs(windowName);
-
-                RequestChangeContent?.Invoke(this, args);
+                ShowErrorPopupLogin("Недопустимая длина логина");
+                ShowErrorPopupPassword("Недопустимая длина пароля");
+            }
+            else if (isLoginError)
+            {
+                ShowErrorPopupLogin("Недопустимая длина логина");
+                HideErrorPopupPassword(); // Скрываем окно ошибок для пароля
+            }
+            else if (isPasswordError)
+            {
+                ShowErrorPopupPassword("Недопустимая длина пароля");
+                HideErrorPopupLogin(); // Скрываем окно ошибок для логина
             }
             else
             {
-                failedLoginAttempts++;
-                ErrorMessage.Text = "Неправильный логин или пароль";
-                ErrorMessage.Visibility = Visibility.Visible;
+                // Оба условия не нарушены, продолжаем проверку и вход
+                HideErrorPopupLogin(); // Скрываем окно ошибок для логина
+                HideErrorPopupPassword(); // Скрываем окно ошибок для пароля
+
+                if (username == string.Empty)
+                {
+                    ShowErrorPopupLogin("Введите логин!");
+                    return;
+                }
+
+                if (password == string.Empty)
+                {
+                    ShowErrorPopupPassword("Введите пароль!");
+                    return;
+                }
+
+                if (userRepository.VerifyUser(username, password))
+                {
+                    failedLoginAttempts = 0;
+                    ErrorMessage.Text = "Вход успешен";
+                    ErrorMessage.Visibility = Visibility.Visible;
+
+                    // переход на меню
+
+                    UsernameTextBox.Clear();
+                    PasswordBox.Clear();
+                    RememberPasswordBox.IsChecked = false;
+
+                    ErrorMessage.Visibility = Visibility.Collapsed;
+
+                    string windowName = "menuWindow";
+                    WindowEventArgs args = new WindowEventArgs(windowName);
+
+                    RequestChangeContent?.Invoke(this, args);
+                }
+                else
+                {
+                    failedLoginAttempts++;
+                    ErrorMessage.Text = "Неправильный логин или пароль";
+                    ErrorMessage.Visibility = Visibility.Visible;
+                }
             }
         }
+
 
         private void RegistrationWindow(object sender, RoutedEventArgs e)
         {

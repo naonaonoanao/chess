@@ -510,7 +510,7 @@
             </Button.ContentTemplate>
         </Button>
 
-        <Button Content="Меню" FontFamily="Comic Sans MS" FontWeight="Bold" Style="{StaticResource CustomButtonStyle}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="47,0,10,60" Width="155" Height="55">
+        <Button Content="Меню" Click="BackToMenu_Click"  FontFamily="Comic Sans MS" FontWeight="Bold" Style="{StaticResource CustomButtonStyle}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="47,0,10,60" Width="155" Height="55">
             <Button.ContentTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding}" FontSize="19"/>

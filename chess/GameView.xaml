@@ -76,11 +76,6 @@
                     <!-- Стиль для фигур шахматной доски -->
                     <Style x:Key="ChessPieceStyle" TargetType="TextBlock">
                         <!-- Добавляем свечение -->
-                        <Setter Property="Effect">
-                            <Setter.Value>
-                                <DropShadowEffect BlurRadius="5" Color="Black" ShadowDepth="0"/>
-                            </Setter.Value>
-                        </Setter>
                         <!-- Другие настройки стиля, если необходимо -->
                     </Style>
 
@@ -105,6 +100,23 @@
                         </Setter>
                     </Style>
 
+                    <SolidColorBrush x:Key="PlayerColor" Color="White"/>
+                    <SolidColorBrush x:Key="NeuroColor" Color="Black"/>
+
+                    <!-- Стиль для белых фигур-->
+                    <Style x:Key="PlayerPers" TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="{DynamicResource PlayerColor}"/>
+                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                    </Style>
+
+                    <!-- Стиль для черных фигур-->
+                    <Style x:Key="NeuroPers" TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="{DynamicResource NeuroColor}"/>
+                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                    </Style>
+    
                     <!-- Чередование цветов ячеек -->
                     <Style TargetType="Border" BasedOn="{StaticResource ChessCell}" x:Key="ChessCellWhite"  x:Name="ChessCellWhite">
                         <Setter Property="Background" Value="#E69"/>
@@ -262,54 +274,54 @@
                 <!-- Создаем ячейки с фигурами -->
                 <!-- Верхний ряд (белые фигуры) -->
                 <Border Style="{StaticResource ChessCellWhite}" Grid.Row="1" Grid.Column="1" >
-                    <TextBlock Text="♖" Style="{StaticResource ChessPieceStyle}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♜" Style="{StaticResource PlayerPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellBlack}" Grid.Row="1" Grid.Column="2">
-                    <TextBlock Text="♘" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♞" Style="{StaticResource PlayerPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellWhite}" Grid.Row="1" Grid.Column="3">
-                    <TextBlock Text="♗" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♝" Style="{StaticResource PlayerPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellBlack}" Grid.Row="1" Grid.Column="4">
-                    <TextBlock Text="♔" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♚" Style="{StaticResource PlayerPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellWhite}" Grid.Row="1" Grid.Column="5">
-                    <TextBlock Text="♕" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♛" Style="{StaticResource PlayerPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellBlack}" Grid.Row="1" Grid.Column="6">
-                    <TextBlock Text="♗" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♝" Style="{StaticResource PlayerPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellWhite}" Grid.Row="1" Grid.Column="7">
-                    <TextBlock Text="♘" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♞" Style="{StaticResource PlayerPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellBlack}" Grid.Row="1" Grid.Column="8">
-                    <TextBlock Text="♖" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♜" Style="{StaticResource PlayerPers}"/>
                 </Border>
 
                 <!-- Второй ряд (белые пешки) -->
                 <Border Style="{StaticResource ChessCellBlack}" Grid.Row="2" Grid.Column="1">
-                    <TextBlock Text="♙" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♟" Style="{StaticResource PlayerPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellWhite}" Grid.Row="2" Grid.Column="2">
-                    <TextBlock Text="♙" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♟" Style="{StaticResource PlayerPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellBlack}" Grid.Row="2" Grid.Column="3">
-                    <TextBlock Text="♙" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♟" Style="{StaticResource PlayerPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellWhite}" Grid.Row="2" Grid.Column="4">
-                    <TextBlock Text="♙" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♟" Style="{StaticResource PlayerPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellBlack}" Grid.Row="2" Grid.Column="5">
-                    <TextBlock Text="♙" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♟" Style="{StaticResource PlayerPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellWhite}" Grid.Row="2" Grid.Column="6">
-                    <TextBlock Text="♙" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♟" Style="{StaticResource PlayerPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellBlack}" Grid.Row="2" Grid.Column="7">
-                    <TextBlock Text="♙" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♟" Style="{StaticResource PlayerPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellWhite}" Grid.Row="2" Grid.Column="8">
-                    <TextBlock Text="♙" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♟" Style="{StaticResource PlayerPers}"/>
                 </Border>
 
                 <!-- Третий ряд и последующие (пустые ячейки) -->
@@ -420,54 +432,54 @@
 
                 <!-- Седьмой ряд (черные пешки) -->
                 <Border Style="{StaticResource ChessCellWhite}" Grid.Row="7" Grid.Column="1">
-                    <TextBlock Text="♟" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♟" Style="{StaticResource NeuroPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellBlack}" Grid.Row="7" Grid.Column="2">
-                    <TextBlock Text="♟" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♟" Style="{StaticResource NeuroPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellWhite}" Grid.Row="7" Grid.Column="3">
-                    <TextBlock Text="♟" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♟" Style="{StaticResource NeuroPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellBlack}" Grid.Row="7" Grid.Column="4">
-                    <TextBlock Text="♟" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♟" Style="{StaticResource NeuroPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellWhite}" Grid.Row="7" Grid.Column="5">
-                    <TextBlock Text="♟" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♟" Style="{StaticResource NeuroPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellBlack}" Grid.Row="7" Grid.Column="6">
-                    <TextBlock Text="♟" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♟" Style="{StaticResource NeuroPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellWhite}" Grid.Row="7" Grid.Column="7">
-                    <TextBlock Text="♟" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♟" Style="{StaticResource NeuroPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellBlack}" Grid.Row="7" Grid.Column="8">
-                    <TextBlock Text="♟" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♟" Style="{StaticResource NeuroPers}"/>
                 </Border>
 
                 <!-- Восьмой ряд (черные фигуры) -->
                 <Border Style="{StaticResource ChessCellBlack}" Grid.Row="8" Grid.Column="1">
-                    <TextBlock Text="♜" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♜" Style="{StaticResource NeuroPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellWhite}" Grid.Row="8" Grid.Column="2">
-                    <TextBlock Text="♞" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♞" Style="{StaticResource NeuroPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellBlack}" Grid.Row="8" Grid.Column="3">
-                    <TextBlock Text="♝" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♝" Style="{StaticResource NeuroPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellWhite}" Grid.Row="8" Grid.Column="4">
-                    <TextBlock Text="♚" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♚" Style="{StaticResource NeuroPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellBlack}" Grid.Row="8" Grid.Column="5">
-                    <TextBlock Text="♛" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♛" Style="{StaticResource NeuroPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellWhite}" Grid.Row="8" Grid.Column="6">
-                    <TextBlock Text="♝" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♝" Style="{StaticResource NeuroPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellBlack}" Grid.Row="8" Grid.Column="7">
-                    <TextBlock Text="♞" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♞" Style="{StaticResource NeuroPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellWhite}" Grid.Row="8" Grid.Column="8">
-                    <TextBlock Text="♜" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="♜" Style="{StaticResource NeuroPers}"/>
                 </Border>
             </Grid>
         </Viewbox>
@@ -491,7 +503,8 @@
                 <TextBlock Text="История ходов" Foreground="White" FontFamily="Comic Sans MS" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,20,0,20"/>
                 <!-- Ваше содержимое блока -->
                 <!-- Например, текст, кнопки и т.д. -->
-
+                <StackPanel x:Name="history">
+                </StackPanel>
                 <!-- Нижний сепаратор перед изображением человека -->
                 <Separator Height="10" Background="#adee" Margin="0,0,0,-650"/>
 

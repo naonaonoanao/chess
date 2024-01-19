@@ -64,6 +64,8 @@ namespace uwp
             }
             else if (args.windowName == "boardWindow")
             {
+                boardView.isSecondPlayerMove = menuView.IsSecondPlayerMove;
+                boardView.UpdateColor();
                 MainContent.Content = boardView;
             }
             else if (args.windowName == "menuWindow")

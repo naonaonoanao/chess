@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +21,7 @@ namespace uwp
     public partial class MenuView : UserControl
     {
         public event EventHandler RequestChangeContent;
+        public bool IsSecondPlayerMove = false;
         public MenuView()
         {
             InitializeComponent();
@@ -27,13 +29,15 @@ namespace uwp
 
         private void BlackColor_Click(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("Black color clicked");
+            Debug.WriteLine("Black color clicked");
+            IsSecondPlayerMove = true;
             // Здесь добавьте свою логику для обработки клика на черный цвет
         }
 
         private void WhiteColor_Click(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("White color clicked");
+            Debug.WriteLine("White color clicked");
+            IsSecondPlayerMove = false;
             // Здесь добавьте свою логику для обработки клика на белый цвет
         }
 

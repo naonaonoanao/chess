@@ -15,9 +15,25 @@ namespace uwp
     public partial class GameView : UserControl
     {
         public event EventHandler RequestChangeContent;
+        public bool isSecondPlayerMove = false;
         public GameView()
         {
             InitializeComponent();
+        }
+
+        public void UpdateColor()
+        {
+
+            if (isSecondPlayerMove)
+            {
+                ChessGrid.Resources["NeuroColor"] = new SolidColorBrush(Colors.Black);
+                ChessGrid.Resources["PlayerColor"] = new SolidColorBrush(Colors.White);
+            }
+            else
+            {
+                ChessGrid.Resources["NeuroColor"] = new SolidColorBrush(Colors.White);
+                ChessGrid.Resources["PlayerColor"] = new SolidColorBrush(Colors.Black);
+            }
         }
 
         private const string ServerUrl = "http://localhost:8000/";
@@ -38,6 +54,18 @@ namespace uwp
             { 6, 6 },
             { 7, 7 },
             { 8, 8 },
+        };
+
+        private Dictionary<int, int> blackRowsReverse = new Dictionary<int, int>()
+        {
+            { 1, 8 },
+            { 2, 7 },
+            { 3, 6 },
+            { 4, 5 },
+            { 5, 4 },
+            { 6, 3 },
+            { 7, 2 },
+            { 8, 1 },
         };
 
         private Dictionary<int, string> blackColumns = new Dictionary<int, string>()
@@ -76,7 +104,19 @@ namespace uwp
                 }
                 else
                 {
-                    MovePiece((TextBlock)element);
+                    TextBlock targetCell = (TextBlock)element;
+
+                    //int fromRow = Grid.GetRow((UIElement)selectedCell.Parent);
+                    //int fromColumn = Grid.GetColumn((UIElement)selectedCell.Parent);
+                    //int toRow = Grid.GetRow((UIElement)targetCell.Parent);
+                    //int toColumn = Grid.GetColumn((UIElement)targetCell.Parent);
+
+                    //if (IsValidMove(fromRow, fromColumn, toRow, toColumn, targetCell))
+                    //{
+                    //    SwapPieces(selectedCell, targetCell);
+                    //}
+
+                    MovePiece(targetCell);
                 }
             }
         }
@@ -109,8 +149,9 @@ namespace uwp
 
             if (IsValidMove(fromRow, fromColumn, toRow, toColumn, targetCell))
             {
-                SwapPieces(selectedCell, targetCell);
+                //SwapPieces(selectedCell, targetCell);
 
+                // Применяем ход к доске, используя ваши существующие методы
                 string userMove = $"{blackColumns[fromColumn]}{blackRows[fromRow]}{blackColumns[toColumn]}{blackRows[toRow]}";
                 Debug.WriteLine(userMove);
                 Task<string> userMoveTask = Task.Run(() => MakeMove($"make-user-move/?move={userMove}", ""));
@@ -127,9 +168,36 @@ namespace uwp
 
             selectedCell = null;
 
+            showMovesHistory();
+
             if (board.IsEndGame)
             {
                 EndGame();
+            }
+        }
+
+        private void showMovesHistory()
+        {
+            history.Children.Clear();
+            int i = 1;
+            foreach (var move in board.ExecutedMoves)
+            {
+                string fromCellMove = blackColumns[move.OriginalPosition.X + 1] + blackRowsReverse[move.OriginalPosition.Y + 1];
+                string toCellMove = blackColumns[move.NewPosition.X + 1] + blackRowsReverse[move.NewPosition.Y + 1];
+
+                Debug.WriteLine($"Move {i} - from {fromCellMove} to {toCellMove}");
+
+                // Создание нового TextBlock
+                TextBlock moveTextBlock = new TextBlock
+                {
+                    Text = $"{i}. {fromCellMove} - {toCellMove}",
+                    Foreground = Brushes.White // Устанавливаем цвет текста
+                };
+
+                // Добавление TextBlock в Border с именем "history"
+                history.Children.Add(moveTextBlock);
+
+                i++;
             }
         }
 
@@ -166,14 +234,12 @@ namespace uwp
             string neuroMoveValue = neuroMoveElement.GetString();
 
             // Применяем ход к доске
-            // Например, парсинг хода и применение к доске
             int fromRow = reversedBlackRows[int.Parse(neuroMoveValue[1].ToString())];
             int fromColumn = reversedBlackColumns[neuroMoveValue[0].ToString()];
             int toRow = reversedBlackRows[int.Parse(neuroMoveValue[3].ToString())];
             int toColumn = reversedBlackColumns[neuroMoveValue[2].ToString()];
 
             // Применяем ход к доске, используя ваши существующие методы
-            // Например:
             string fromCell = blackColumns[fromColumn] + blackRows[fromRow];
             string toCell = blackColumns[toColumn] + blackRows[toRow];
 
@@ -209,7 +275,7 @@ namespace uwp
             Move move = new Move(fromCell, toCell);
 
             Debug.WriteLine(move.ToString());
-
+            Debug.WriteLine(board.IsValidMove(move));
             if (board.IsValidMove(move))
             {
                 board.Move(move);
@@ -236,6 +302,7 @@ namespace uwp
             return true;
         }
 
+        //Замена фигур
         private void SwapPieces(TextBlock sourceCell, TextBlock targetCell)
         {
             var oldForeground = sourceCell.Foreground;
@@ -249,7 +316,7 @@ namespace uwp
         //Выбор новой фигуры для пешки
         private void PromotePawn(TextBlock targetCell)
         {
-            
+
         }
 
         private bool isBorderVisible = false;
@@ -276,7 +343,7 @@ namespace uwp
             // Создание анимации изменения высоты
             DoubleAnimation heightAnimation = new DoubleAnimation();
             heightAnimation.From = 0;
-            heightAnimation.To = 541; // Здесь укажите желаемую высоту бордера
+            heightAnimation.To = 541;
             heightAnimation.Duration = TimeSpan.FromSeconds(0.5);
 
             // Применение анимации к высоте бордера
@@ -287,7 +354,7 @@ namespace uwp
         {
             // Создание анимации изменения высоты
             DoubleAnimation heightAnimation = new DoubleAnimation();
-            heightAnimation.From = 541; // Здесь укажите текущую высоту бордера
+            heightAnimation.From = 541;
             heightAnimation.To = 0;
             heightAnimation.Duration = TimeSpan.FromSeconds(0.5);
 

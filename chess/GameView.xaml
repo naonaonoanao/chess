@@ -283,10 +283,10 @@
                     <TextBlock Text="♝" Style="{StaticResource PlayerPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellBlack}" Grid.Row="1" Grid.Column="4">
-                    <TextBlock Text="♚" Style="{StaticResource PlayerPers}"/>
-                </Border>
-                <Border Style="{StaticResource ChessCellWhite}" Grid.Row="1" Grid.Column="5">
                     <TextBlock Text="♛" Style="{StaticResource PlayerPers}"/>
+                </Border> 
+                <Border Style="{StaticResource ChessCellWhite}" Grid.Row="1" Grid.Column="5">
+                    <TextBlock Text="♚" Style="{StaticResource PlayerPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellBlack}" Grid.Row="1" Grid.Column="6">
                     <TextBlock Text="♝" Style="{StaticResource PlayerPers}"/>
@@ -467,10 +467,10 @@
                     <TextBlock Text="♝" Style="{StaticResource NeuroPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellWhite}" Grid.Row="8" Grid.Column="4">
-                    <TextBlock Text="♚" Style="{StaticResource NeuroPers}"/>
-                </Border>
-                <Border Style="{StaticResource ChessCellBlack}" Grid.Row="8" Grid.Column="5">
                     <TextBlock Text="♛" Style="{StaticResource NeuroPers}"/>
+                </Border> 
+                <Border Style="{StaticResource ChessCellBlack}" Grid.Row="8" Grid.Column="5">
+                    <TextBlock Text="♚" Style="{StaticResource NeuroPers}"/>
                 </Border>
                 <Border Style="{StaticResource ChessCellWhite}" Grid.Row="8" Grid.Column="6">
                     <TextBlock Text="♝" Style="{StaticResource NeuroPers}"/>

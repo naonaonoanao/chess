@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -16,18 +17,55 @@ namespace uwp
     {
         public event EventHandler RequestChangeContent;
         public bool isSecondPlayerMove = false;
+        public bool isFirstMove = false;
+        private string promotionType = "";
         public GameView()
         {
             InitializeComponent();
+            board.OnPromotePawn += HandlePromotePawn;
+        }
+
+        private void HandlePromotePawn(object sender, PromotionEventArgs e)
+        {
+            Debug.WriteLine("PROMOTION!!!!");
+            e.PromotionResult = PromotionType.ToKnight;
+            promotionType = "n";
         }
 
         public void UpdateColor()
         {
 
-            if (isSecondPlayerMove)
+            if (isSecondPlayerMove) // если игрок черный
             {
                 ChessGrid.Resources["NeuroColor"] = new SolidColorBrush(Colors.Black);
                 ChessGrid.Resources["PlayerColor"] = new SolidColorBrush(Colors.White);
+
+                if (!isFirstMove) // если не сделан первый ход в игре
+                {
+                    
+                    ((GetCell(1, 4).Child as TextBlock).Text, (GetCell(1, 5).Child as TextBlock).Text) = ((GetCell(1, 5).Child as TextBlock).Text, (GetCell(1, 4).Child as TextBlock).Text);
+                    ((GetCell(8, 4).Child as TextBlock).Text, (GetCell(8, 5).Child as TextBlock).Text) = ((GetCell(8, 5).Child as TextBlock).Text, (GetCell(8, 4).Child as TextBlock).Text);
+                    
+                    var worker = new BackgroundWorker(); // против лага
+
+                    worker.DoWork += (s, arg) =>
+                    {
+                        var neuroMove = MakeMove("make-neuro-move", "");
+
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            ApplyNeuroMove(neuroMove);
+                        });
+                    };
+
+                    worker.RunWorkerCompleted += (s, arg) =>
+                    {
+                        showMovesHistory();
+                    };
+
+                    worker.RunWorkerAsync();
+                    isFirstMove = true;
+                }
             }
             else
             {
@@ -40,7 +78,6 @@ namespace uwp
 
         private TextBlock? selectedCell;
         private Style? selectedPrevStyle;
-        private bool IsWhiteTurn = true;
 
         private ChessBoard board = new ChessBoard();
 
@@ -80,6 +117,18 @@ namespace uwp
             { 8, "a" },
         };
 
+        private Dictionary<int, string> blackColumnsReverse = new Dictionary<int, string>()
+        {
+            { 1, "a" },
+            { 2, "b" },
+            { 3, "c" },
+            { 4, "d" },
+            { 5, "e" },
+            { 6, "f" },
+            { 7, "g" },
+            { 8, "h" },
+        };
+
         private Dictionary<int, int> ReversedDictionaryRows(Dictionary<int, int> original)
         {
             return original.ToDictionary(kvp => kvp.Value, kvp => kvp.Key);
@@ -105,17 +154,7 @@ namespace uwp
                 else
                 {
                     TextBlock targetCell = (TextBlock)element;
-
-                    //int fromRow = Grid.GetRow((UIElement)selectedCell.Parent);
-                    //int fromColumn = Grid.GetColumn((UIElement)selectedCell.Parent);
-                    //int toRow = Grid.GetRow((UIElement)targetCell.Parent);
-                    //int toColumn = Grid.GetColumn((UIElement)targetCell.Parent);
-
-                    //if (IsValidMove(fromRow, fromColumn, toRow, toColumn, targetCell))
-                    //{
-                    //    SwapPieces(selectedCell, targetCell);
-                    //}
-
+                    
                     MovePiece(targetCell);
                 }
             }
@@ -142,6 +181,7 @@ namespace uwp
 
         private void MovePiece(TextBlock targetCell)
         {
+            var worker = new BackgroundWorker();
             int fromRow = Grid.GetRow((UIElement)selectedCell.Parent);
             int fromColumn = Grid.GetColumn((UIElement)selectedCell.Parent);
             int toRow = Grid.GetRow((UIElement)targetCell.Parent);
@@ -149,30 +189,66 @@ namespace uwp
 
             if (IsValidMove(fromRow, fromColumn, toRow, toColumn, targetCell))
             {
-                //SwapPieces(selectedCell, targetCell);
+                isFirstMove = true;
+                SwapPieces(selectedCell, targetCell);
+                selectedCell = null;
 
-                // Применяем ход к доске, используя ваши существующие методы
-                string userMove = $"{blackColumns[fromColumn]}{blackRows[fromRow]}{blackColumns[toColumn]}{blackRows[toRow]}";
-                Debug.WriteLine(userMove);
-                Task<string> userMoveTask = Task.Run(() => MakeMove($"make-user-move/?move={userMove}", ""));
-                userMoveTask.Wait(); // Блокируем основной поток до завершения задачи
-                string userMoveResponse = userMoveTask.Result;
+                worker.DoWork += (s, arg) =>
+                {
+                    // Применяем ход к доске, используя ваши существующие методы
+                    string userMove;
+                    if (isSecondPlayerMove)
+                    {
+                        userMove = $"{blackColumns[fromColumn]}{blackRows[fromRow]}{blackColumns[toColumn]}{blackRows[toRow]}";
+                    }
+                    else
+                    {
+                        userMove = $"{blackColumnsReverse[fromColumn]}{blackRowsReverse[fromRow]}{blackColumnsReverse[toColumn]}{blackRowsReverse[toRow]}";
+                    }
 
-                // Отправка запроса на получение хода от нейросети
-                Task<string> neuroMoveTask = Task.Run(() => MakeMove("make-neuro-move", ""));
-                neuroMoveTask.Wait(); // Блокируем основной поток до завершения задачи
-                string neuroMoveResponse = neuroMoveTask.Result;
+                    Debug.WriteLine(userMove);
 
-                ApplyNeuroMove(neuroMoveResponse);
-            }
+                    if (promotionType == "n")
+                    {
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            targetCell.Text = "♞";
+                        });
+                    }
+                    
+                    MakeMove($"make-user-move/?move={userMove+promotionType}", "");
+                    promotionType = "";
 
-            selectedCell = null;
+                    var neuroMove = MakeMove("make-neuro-move", "");
 
-            showMovesHistory();
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        ApplyNeuroMove(neuroMove);
+                    });
+                };
 
-            if (board.IsEndGame)
+                worker.RunWorkerCompleted += (s, arg) =>
+                {
+                    showMovesHistory();
+
+                    if (board.IsEndGame)
+                    {
+                        EndGame();
+                    }
+                };
+
+                worker.RunWorkerAsync();
+
+                showMovesHistory();
+
+                if (board.IsEndGame)
+                {
+                    EndGame();
+                }
+            } 
+            else
             {
-                EndGame();
+                selectedCell = null;
             }
         }
 
@@ -182,9 +258,18 @@ namespace uwp
             int i = 1;
             foreach (var move in board.ExecutedMoves)
             {
-                string fromCellMove = blackColumns[move.OriginalPosition.X + 1] + blackRowsReverse[move.OriginalPosition.Y + 1];
-                string toCellMove = blackColumns[move.NewPosition.X + 1] + blackRowsReverse[move.NewPosition.Y + 1];
-
+                string fromCellMove;
+                string toCellMove;
+                if (isSecondPlayerMove)
+                {
+                    fromCellMove = blackColumns[move.OriginalPosition.X + 1] + blackRowsReverse[move.OriginalPosition.Y + 1];
+                    toCellMove = blackColumns[move.NewPosition.X + 1] + blackRowsReverse[move.NewPosition.Y + 1];
+                }
+                else
+                {
+                    fromCellMove = blackColumnsReverse[move.OriginalPosition.X + 1] + blackRows[move.OriginalPosition.Y + 1];
+                    toCellMove = blackColumnsReverse[move.NewPosition.X + 1] + blackRows[move.NewPosition.Y + 1];
+                }
                 Debug.WriteLine($"Move {i} - from {fromCellMove} to {toCellMove}");
 
                 // Создание нового TextBlock
@@ -207,6 +292,7 @@ namespace uwp
             {
                 string url = $"{ServerUrl}{endpoint}";
                 var content = new StringContent(move, Encoding.UTF8, "application/json");
+
                 var response = client.PostAsync(url, content).Result;
 
                 if (response.IsSuccessStatusCode)
@@ -226,6 +312,8 @@ namespace uwp
         {
             Dictionary<int, int> reversedBlackRows = ReversedDictionaryRows(blackRows);
             Dictionary<string, int> reversedBlackColumns = ReversedDictionaryColumns(blackColumns);
+            Dictionary<int, int> reversedBlackRowsReverse = ReversedDictionaryRows(blackRowsReverse);
+            Dictionary<string, int> reversedBlackColumnsReverse = ReversedDictionaryColumns(blackColumnsReverse);
 
             // Получаем значение хода нейросети
             JsonDocument jsonDocument = JsonDocument.Parse(neuroMove);
@@ -234,14 +322,34 @@ namespace uwp
             string neuroMoveValue = neuroMoveElement.GetString();
 
             // Применяем ход к доске
-            int fromRow = reversedBlackRows[int.Parse(neuroMoveValue[1].ToString())];
-            int fromColumn = reversedBlackColumns[neuroMoveValue[0].ToString()];
-            int toRow = reversedBlackRows[int.Parse(neuroMoveValue[3].ToString())];
-            int toColumn = reversedBlackColumns[neuroMoveValue[2].ToString()];
+            int fromRow;
+            int fromColumn;
+            int toRow;
+            int toColumn;
 
             // Применяем ход к доске, используя ваши существующие методы
-            string fromCell = blackColumns[fromColumn] + blackRows[fromRow];
-            string toCell = blackColumns[toColumn] + blackRows[toRow];
+            string fromCell;
+            string toCell;
+            if (isSecondPlayerMove)
+            {
+                fromRow = reversedBlackRows[int.Parse(neuroMoveValue[1].ToString())];
+                fromColumn = reversedBlackColumns[neuroMoveValue[0].ToString()];
+                toRow = reversedBlackRows[int.Parse(neuroMoveValue[3].ToString())];
+                toColumn = reversedBlackColumns[neuroMoveValue[2].ToString()];
+
+                fromCell = blackColumns[fromColumn] + blackRows[fromRow];
+                toCell = blackColumns[toColumn] + blackRows[toRow];
+            }
+            else
+            {
+                fromRow = reversedBlackRowsReverse[int.Parse(neuroMoveValue[1].ToString())];
+                fromColumn = reversedBlackColumnsReverse[neuroMoveValue[0].ToString()];
+                toRow = reversedBlackRowsReverse[int.Parse(neuroMoveValue[3].ToString())];
+                toColumn = reversedBlackColumnsReverse[neuroMoveValue[2].ToString()];
+
+                fromCell = blackColumnsReverse[fromColumn] + blackRowsReverse[fromRow];
+                toCell = blackColumnsReverse[toColumn] + blackRowsReverse[toRow];
+            }
 
             Move move = new Move(fromCell, toCell);
             board.Move(move);
@@ -263,9 +371,31 @@ namespace uwp
 
         private bool IsValidMove(int fromRow, int fromColumn, int toRow, int toColumn, TextBlock targetCell)
         {
-            string fromCell = blackColumns[fromColumn] + blackRows[fromRow];
-            string toCell = blackColumns[toColumn] + blackRows[toRow];
+            string fromCell;
+            string toCell;
 
+            if (isSecondPlayerMove)
+            {
+                fromCell = blackColumns[fromColumn] + blackRows[fromRow];
+                toCell = blackColumns[toColumn] + blackRows[toRow];
+            }
+            else
+            {
+                fromCell = blackColumnsReverse[fromColumn] + blackRowsReverse[fromRow];
+                toCell = blackColumnsReverse[toColumn] + blackRowsReverse[toRow];
+            }
+
+            if (selectedCell.Foreground is SolidColorBrush foregroundBrush)
+            {
+                if (foregroundBrush.Color == Colors.Black && !isSecondPlayerMove)
+                {
+                    return false;
+                }
+                else if (foregroundBrush.Color == Colors.White && isSecondPlayerMove)
+                {
+                    return false;
+                }
+            }
 
             if (board[fromCell] is null)
             {
@@ -279,6 +409,10 @@ namespace uwp
             if (board.IsValidMove(move))
             {
                 board.Move(move);
+
+                Console.WriteLine(board.ToAscii());
+                Console.WriteLine(board.ToPgn());
+
                 return true;
             }
             return false;
@@ -287,19 +421,6 @@ namespace uwp
         private void EndGame()
         {
             throw new Exception("победили");
-        }
-
-        private bool IsCellEmpty(int row, int column)
-        {
-            if (ChessGrid.Children.Cast<UIElement>()
-                .FirstOrDefault(c => Grid.GetRow(c) == row && Grid.GetColumn(c) == column) is Border border
-                && border.Child is TextBlock intermediateCell
-                && intermediateCell.Text != " ")
-            {
-                return false;
-            }
-
-            return true;
         }
 
         //Замена фигур
@@ -311,12 +432,6 @@ namespace uwp
 
             targetCell.Text = sourceCell.Text;
             sourceCell.Text = " ";
-        }
-
-        //Выбор новой фигуры для пешки
-        private void PromotePawn(TextBlock targetCell)
-        {
-
         }
 
         private bool isBorderVisible = false;

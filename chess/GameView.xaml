@@ -11,6 +11,7 @@
 
     <Grid>
         <Grid.Resources>
+
             <!-- Стиль для дополнительного правого блока -->
             <Style x:Key="AdditionalRightBlockStyle" TargetType="Border">
                 <Setter Property="Background" Value="#80aadd"/>
@@ -30,6 +31,10 @@
                 <Setter Property="BorderThickness" Value="1"/>
                 <!-- Толщина обводки -->
             </Style>
+
+            
+            
+            
 
             <!-- Стиль для обычной кнопки -->
             <Style x:Key="CustomButtonStyle" TargetType="Button">
@@ -133,6 +138,8 @@
                     </Style>
 
                     
+
+
 
                 </Grid.Resources>
 
@@ -500,16 +507,21 @@
                 <Separator Height="10" Background="White" Margin="0,20,0,0"/>
 
                 <!-- Центральная часть блока -->
-                <TextBlock Text="История ходов" Foreground="White" FontFamily="Comic Sans MS" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,20,0,20"/>
+                <TextBlock Text="История ходов" Foreground="White" FontFamily="Comic Sans MS" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,10,0,10"/>
                 <!-- Ваше содержимое блока -->
                 <!-- Например, текст, кнопки и т.д. -->
-                <StackPanel x:Name="history">
-                </StackPanel>
+                <!-- ScrollViewer для истории ходов -->
+
+                <ScrollViewer Height="350" VerticalScrollBarVisibility="Hidden">
+                    <StackPanel x:Name="history" Background="#33000000">
+                    </StackPanel>
+                   
+                </ScrollViewer>
                 <!-- Нижний сепаратор перед изображением человека -->
-                <Separator Height="10" Background="White" Margin="0,0,0,-650"/>
+                <Separator Height="10" Background="White" Margin="0,0,0,-55"/>
 
                 <!-- Изображение человека в белом круге -->
-                <Border Width="80" Height="80" CornerRadius="60" Background="White" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,349,0,20">
+                <Border Width="80" Height="80" CornerRadius="60" Background="White" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,55,0,20">
                     <Image Source="C:\Users\egoro\source\repos\chess\chess\image\человек1.png" Width="60" Height="60" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 </Border>
             </StackPanel>
@@ -538,7 +550,7 @@
             </Button.ContentTemplate>
         </Button>
 
-        <Border x:Name="animatedBorder" Style="{StaticResource AdditionalLeftBlock}" Width="327" Height="100" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="47,0,10,190">
+        <Border x:Name="animatedBorder" Style="{StaticResource AdditionalLeftBlock}" Width="327" Height="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="47,0,10,190">
 
         </Border>
     </Grid>

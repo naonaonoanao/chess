@@ -487,17 +487,17 @@
 
         <Border Style="{StaticResource AdditionalRightBlockStyle}" Width="300" Height="Auto" HorizontalAlignment="Right" Margin="90,60,70,60">
             <Border.Background>
-                <SolidColorBrush Color="#aade"/>
+                <SolidColorBrush Color="#33000000"/>
             </Border.Background>
 
             <StackPanel>
                 <!-- Изображение робота в белом круге -->
-                <Border Width="100" Height="100" CornerRadius="60" Background="White" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,19,0,0">
-                    <Image Source="C:\Users\egoro\source\repos\chess\chess\image\ретро_робот1 (2).png" Width="80" Height="80" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform"/>
+                <Border Width="80" Height="80" CornerRadius="60" Background="White" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,19,0,0">
+                    <Image Source="C:\Users\egoro\source\repos\chess\chess\image\ретро_робот1 (2).png" Width="60" Height="60" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform"/>
                 </Border>
 
                 <!-- Верхний сепаратор после изображения робота -->
-                <Separator Height="10" Background="#adee" Margin="0,20,0,0"/>
+                <Separator Height="10" Background="White" Margin="0,20,0,0"/>
 
                 <!-- Центральная часть блока -->
                 <TextBlock Text="История ходов" Foreground="White" FontFamily="Comic Sans MS" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,20,0,20"/>
@@ -506,11 +506,11 @@
                 <StackPanel x:Name="history">
                 </StackPanel>
                 <!-- Нижний сепаратор перед изображением человека -->
-                <Separator Height="10" Background="#adee" Margin="0,0,0,-650"/>
+                <Separator Height="10" Background="White" Margin="0,0,0,-650"/>
 
                 <!-- Изображение человека в белом круге -->
-                <Border Width="100" Height="100" CornerRadius="60" Background="White" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,349,0,20">
-                    <Image Source="C:\Users\egoro\source\repos\chess\chess\image\человек1.png" Width="80" Height="80" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Border Width="80" Height="80" CornerRadius="60" Background="White" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,349,0,20">
+                    <Image Source="C:\Users\egoro\source\repos\chess\chess\image\человек1.png" Width="60" Height="60" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 </Border>
             </StackPanel>
         </Border>

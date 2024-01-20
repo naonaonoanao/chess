@@ -256,35 +256,76 @@ namespace uwp
         {
             history.Children.Clear();
             int i = 1;
-            foreach (var move in board.ExecutedMoves)
+
+            for (int index = 0; index < board.ExecutedMoves.Count; index += 2)
             {
-                string fromCellMove;
-                string toCellMove;
+                var move1 = board.ExecutedMoves[index];
+                var move2 = (index + 1 < board.ExecutedMoves.Count) ? board.ExecutedMoves[index + 1] : null;
+
+                string fromCellMove1;
+                string toCellMove1;
+                string fromCellMove2 = string.Empty;
+                string toCellMove2 = string.Empty;
+
                 if (isSecondPlayerMove)
                 {
-                    fromCellMove = blackColumns[move.OriginalPosition.X + 1] + blackRowsReverse[move.OriginalPosition.Y + 1];
-                    toCellMove = blackColumns[move.NewPosition.X + 1] + blackRowsReverse[move.NewPosition.Y + 1];
+                    fromCellMove1 = blackColumns[move1.OriginalPosition.X + 1] + blackRowsReverse[move1.OriginalPosition.Y + 1];
+                    toCellMove1 = blackColumns[move1.NewPosition.X + 1] + blackRowsReverse[move1.NewPosition.Y + 1];
+
+                    if (move2 != null)
+                    {
+                        fromCellMove2 = blackColumns[move2.OriginalPosition.X + 1] + blackRowsReverse[move2.OriginalPosition.Y + 1];
+                        toCellMove2 = blackColumns[move2.NewPosition.X + 1] + blackRowsReverse[move2.NewPosition.Y + 1];
+                    }
                 }
                 else
                 {
-                    fromCellMove = blackColumnsReverse[move.OriginalPosition.X + 1] + blackRows[move.OriginalPosition.Y + 1];
-                    toCellMove = blackColumnsReverse[move.NewPosition.X + 1] + blackRows[move.NewPosition.Y + 1];
-                }
-                Debug.WriteLine($"Move {i} - from {fromCellMove} to {toCellMove}");
+                    fromCellMove1 = blackColumnsReverse[move1.OriginalPosition.X + 1] + blackRows[move1.OriginalPosition.Y + 1];
+                    toCellMove1 = blackColumnsReverse[move1.NewPosition.X + 1] + blackRows[move1.NewPosition.Y + 1];
 
-                // Создание нового TextBlock
-                TextBlock moveTextBlock = new TextBlock
+                    if (move2 != null)
+                    {
+                        fromCellMove2 = blackColumnsReverse[move2.OriginalPosition.X + 1] + blackRows[move2.OriginalPosition.Y + 1];
+                        toCellMove2 = blackColumnsReverse[move2.NewPosition.X + 1] + blackRows[move2.NewPosition.Y + 1];
+                    }
+                }
+
+                // Создаем новый Border для каждой пары ходов
+                Border moveBorder = new Border
                 {
-                    Text = $"{i}. {fromCellMove} - {toCellMove}",
-                    Foreground = Brushes.White // Устанавливаем цвет текста
+                    BorderBrush = Brushes.White,
+                    BorderThickness = new Thickness(1),
+                    Margin = new Thickness(0, 5, 0, 5),
+                    Padding = new Thickness(5)
                 };
 
-                // Добавление TextBlock в Border с именем "history"
-                history.Children.Add(moveTextBlock);
+                // Создаем новый TextBlock для хода
+                TextBlock moveTextBlock = new TextBlock
+                {
+                    Text = $"{i}. {fromCellMove1} - {toCellMove1}",
+                    Foreground = Brushes.White,
+                    FontSize = 16,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+
+                // Если второй ход в паре выполнен, добавляем разделитель и второй ход
+                if (move2 != null)
+                {
+                    moveTextBlock.Text += $" | {fromCellMove2} - {toCellMove2}";
+                }
+
+                // Устанавливаем TextBlock как Child для Border
+                moveBorder.Child = moveTextBlock;
+
+                // Добавляем Border в StackPanel
+                history.Children.Add(moveBorder);
 
                 i++;
             }
         }
+
+
 
         private string MakeMove(string endpoint, string move)
         {

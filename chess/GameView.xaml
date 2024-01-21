@@ -6,9 +6,6 @@
              xmlns:local="clr-namespace:uwp"
              mc:Ignorable="d">
 
-        
-
-
     <Grid>
         <Grid.Resources>
 
@@ -132,6 +129,12 @@
                     </Style>
                     <Style TargetType="Border" BasedOn="{StaticResource ChessCell}" x:Key="ChessCellSelected" x:Name="ChessCellSelected">
                         <Setter Property="Background" Value="Yellow"/>
+                    </Style>
+                    <Style TargetType="Border" BasedOn="{StaticResource ChessCell}" x:Key="ChessMoveCellPers" x:Name="ChessMoveCellPers">
+                        <Setter Property="Background" Value="#A3A0B9"/> 
+                    </Style>
+                    <Style TargetType="Border" BasedOn="{StaticResource ChessCell}" x:Key="ChessMoveCellNeuro" x:Name="ChessMoveCellNeuro">
+                        <Setter Property="Background" Value="#EBC4B8"/>
                     </Style>
                     <Style TargetType="Border" BasedOn="{StaticResource ChessCell}" x:Key="ChessCellChecked" x:Name="ChessCellChecked">
                         <Setter Property="Background" Value="Red"/>

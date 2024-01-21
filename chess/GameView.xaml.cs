@@ -19,8 +19,14 @@ namespace uwp
         public bool isSecondPlayerMove = false;
         public bool isFirstMove = false;
         private string promotionType = "";
+        public bool isGameStarted = false;
+
+        private PromotionType userPromotion = PromotionType.ToQueen;
+        private PromotionType? neuroPromotion;
+
         public GameView()
         {
+            MakeMove("clear-board", "");
             InitializeComponent();
             board.OnPromotePawn += HandlePromotePawn;
         }
@@ -28,8 +34,16 @@ namespace uwp
         private void HandlePromotePawn(object sender, PromotionEventArgs e)
         {
             Debug.WriteLine("PROMOTION!!!!");
-            e.PromotionResult = PromotionType.ToKnight;
-            promotionType = "n";
+            if (neuroPromotion != null)
+            {
+                e.PromotionResult = (PromotionType)neuroPromotion;
+                promotionType = promotionDict[(PromotionType)neuroPromotion];
+            }
+            else
+            {
+                e.PromotionResult = userPromotion;
+                promotionType = promotionDict[userPromotion];
+            } 
         }
 
         public void UpdateColor()
@@ -80,6 +94,22 @@ namespace uwp
         private Style? selectedPrevStyle;
 
         private ChessBoard board = new ChessBoard();
+
+        private Dictionary<PromotionType, string> promotionDict = new Dictionary<PromotionType, string>()
+        {
+            { PromotionType.ToBishop, "b" },
+            { PromotionType.ToQueen, "q" },
+            { PromotionType.ToKnight, "n" },
+            { PromotionType.ToRook, "r" },
+        };
+
+        private Dictionary<string, string> piecesDict = new Dictionary<string, string>()
+        {
+            { "b", "♝" },
+            { "q", "♛" },
+            { "n", "♞" },
+            { "r", "♜" },
+        };
 
         private Dictionary<int, int> blackRows  = new Dictionary<int, int>()
         {
@@ -139,6 +169,12 @@ namespace uwp
             return original.ToDictionary(kvp => kvp.Value, kvp => kvp.Key);
         }
 
+        private Dictionary<string, PromotionType> ReversedPromDict(Dictionary<PromotionType, string> original)
+        {
+            return original.ToDictionary(kvp => kvp.Value, kvp => kvp.Key);
+        }
+
+
         private void ChessGrid_MouseDown(object sender, MouseButtonEventArgs e)
         {
             UIElement element = e.OriginalSource as UIElement;
@@ -189,9 +225,13 @@ namespace uwp
 
             if (IsValidMove(fromRow, fromColumn, toRow, toColumn, targetCell))
             {
+                isGameStarted = true;
                 isFirstMove = true;
                 SwapPieces(selectedCell, targetCell);
                 selectedCell = null;
+
+                // Добавляем выделение ячеек
+                HighlightMovedCellsPers(fromRow, fromColumn, toRow, toColumn);
 
                 worker.DoWork += (s, arg) =>
                 {
@@ -208,11 +248,11 @@ namespace uwp
 
                     Debug.WriteLine(userMove);
 
-                    if (promotionType == "n")
+                    if (promotionType != "")
                     {
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            targetCell.Text = "♞";
+                            targetCell.Text = piecesDict[promotionType];
                         });
                     }
                     
@@ -249,6 +289,111 @@ namespace uwp
             else
             {
                 selectedCell = null;
+            }
+        }
+
+        private TextBlock? selectedCellBeforePers;
+        private Style? selectedPrevStyleBeforePers;
+        private TextBlock? selectedCellAfterPers;
+        private Style? selectedPrevStyleAfterPers;
+
+        private TextBlock? selectedCellBeforeNeuro;
+        private Style? selectedPrevStyleBeforeNeuro;
+        private TextBlock? selectedCellAfterNeuro;
+        private Style? selectedPrevStyleAfterNeuro;
+
+
+        private void ReturnWithoutHightlightMove()
+        {
+            if (selectedCellBeforePers != null && selectedCellBeforePers.Parent is Border)
+            {
+                Border selectedBorder = (Border)selectedCellBeforePers.Parent;
+                selectedBorder.Style = selectedPrevStyleBeforePers; 
+            }
+
+            if (selectedCellAfterPers != null && selectedCellAfterPers.Parent is Border)
+            {
+                Border selectedBorder = (Border)selectedCellAfterPers.Parent;
+                selectedBorder.Style = selectedPrevStyleAfterPers;
+            }
+
+            if (selectedCellBeforeNeuro != null && selectedCellBeforeNeuro.Parent is Border)
+            {
+                Border selectedBorder = (Border)selectedCellBeforeNeuro.Parent;
+                selectedBorder.Style = selectedPrevStyleBeforeNeuro;
+            }
+
+            if (selectedCellAfterNeuro != null && selectedCellAfterNeuro.Parent is Border)
+            {
+                Border selectedBorder = (Border)selectedCellAfterNeuro.Parent;
+                selectedBorder.Style = selectedPrevStyleAfterNeuro;
+            }
+        }
+
+        
+        // метод для выделения ячеек человека
+        private void HighlightMovedCellsPers(int fromRow, int fromColumn, int toRow, int toColumn)
+        {
+            {
+                // Сбрасываем предыдущее выделение
+                ReturnWithoutHightlightMove();
+
+                // Выделяем ячейку, откуда сделан ход
+                if (GetCell(fromRow, fromColumn).Child is TextBlock fromCellTextBlock)
+                {
+                    // Запоминаем текущие выделенные ячейки для следующего сброса
+                    selectedCellBeforePers = fromCellTextBlock;
+                    Border selectedBorder = (Border)selectedCellBeforePers.Parent;
+                    selectedPrevStyleBeforePers = selectedBorder.Style;
+
+                    Border fromCellBorder = (Border)fromCellTextBlock.Parent;
+                    fromCellBorder.Style = ChessGrid.Resources["ChessMoveCellPers"] as Style;
+                }
+
+                // Выделяем ячейку, куда сделан ход
+                if (GetCell(toRow, toColumn).Child is TextBlock toCellTextBlock)
+                {
+                    selectedCellAfterPers = toCellTextBlock;
+                    Border selectedBorder = (Border)selectedCellAfterPers.Parent;
+                    selectedPrevStyleAfterPers = selectedBorder.Style;
+
+                    Border toCellBorder = (Border)toCellTextBlock.Parent;
+                    toCellBorder.Style = ChessGrid.Resources["ChessMoveCellPers"] as Style;
+
+                }
+            }
+        }
+        
+        // метод для выделения ячеек нейронки
+        private void HighlightMovedCellsNeuro(int fromRow, int fromColumn, int toRow, int toColumn)
+        {
+            {
+                // Сбрасываем предыдущее выделение
+                ReturnWithoutHightlightMove();
+
+                // Выделяем ячейку, откуда сделан ход
+                if (GetCell(fromRow, fromColumn).Child is TextBlock fromCellTextBlock)
+                {
+                    // Запоминаем текущие выделенные ячейки для следующего сброса
+                    selectedCellBeforeNeuro = fromCellTextBlock;
+                    Border selectedBorder = (Border)selectedCellBeforeNeuro.Parent;
+                    selectedPrevStyleBeforeNeuro = selectedBorder.Style;
+
+                    Border fromCellBorder = (Border)fromCellTextBlock.Parent;
+                    fromCellBorder.Style = ChessGrid.Resources["ChessMoveCellNeuro"] as Style;
+
+                }
+
+                // Выделяем ячейку, куда сделан ход
+                if (GetCell(toRow, toColumn).Child is TextBlock toCellTextBlock)
+                {
+                    selectedCellAfterNeuro = toCellTextBlock;
+                    Border selectedBorder = (Border)selectedCellAfterNeuro.Parent;
+                    selectedPrevStyleAfterNeuro = selectedBorder.Style;
+
+                    Border toCellBorder = (Border)toCellTextBlock.Parent;
+                    toCellBorder.Style = ChessGrid.Resources["ChessMoveCellNeuro"] as Style;
+                }
             }
         }
 
@@ -351,10 +496,13 @@ namespace uwp
 
         private void ApplyNeuroMove(string neuroMove)
         {
+            isGameStarted = true;
+
             Dictionary<int, int> reversedBlackRows = ReversedDictionaryRows(blackRows);
             Dictionary<string, int> reversedBlackColumns = ReversedDictionaryColumns(blackColumns);
             Dictionary<int, int> reversedBlackRowsReverse = ReversedDictionaryRows(blackRowsReverse);
             Dictionary<string, int> reversedBlackColumnsReverse = ReversedDictionaryColumns(blackColumnsReverse);
+            Dictionary<string, PromotionType> reversedPromotionDict = ReversedPromDict(promotionDict);
 
             // Получаем значение хода нейросети
             JsonDocument jsonDocument = JsonDocument.Parse(neuroMove);
@@ -362,7 +510,14 @@ namespace uwp
 
             string neuroMoveValue = neuroMoveElement.GetString();
 
-            // Применяем ход к доске
+            if (neuroMoveValue.Length == 5)
+            {
+                promotionType = neuroMoveValue[4].ToString();
+                neuroPromotion = reversedPromotionDict[promotionType];
+
+                neuroMoveValue = neuroMoveValue.Substring(0, 4);
+            }
+                // Применяем ход к доске
             int fromRow;
             int fromColumn;
             int toRow;
@@ -395,12 +550,23 @@ namespace uwp
             Move move = new Move(fromCell, toCell);
             board.Move(move);
 
+            // Вызываем метод выделения ячеек при ходе нейронной сети
+            HighlightMovedCellsNeuro(fromRow, fromColumn, toRow, toColumn);
+
             if (board.IsEndGame)
             {
                 EndGame();
             }
 
             SwapPieces(GetCell(fromRow, fromColumn).Child as TextBlock, GetCell(toRow, toColumn).Child as TextBlock);
+
+            if (promotionType != "")
+            {
+                (GetCell(toRow, toColumn).Child as TextBlock).Text = piecesDict[promotionType];
+            }
+
+            neuroPromotion = null;
+            promotionType = "";
         }
 
         private Border GetCell(int row, int column)

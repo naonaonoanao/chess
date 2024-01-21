@@ -64,8 +64,18 @@ namespace uwp
             }
             else if (args.windowName == "boardWindow")
             {
-                boardView.isSecondPlayerMove = menuView.IsSecondPlayerMove;
-                boardView.UpdateColor();
+                if (menuView.isNewGame)
+                {
+                    boardView = new GameView();
+                    boardView.RequestChangeContent += RegistrationView_RequestChangeContent;
+
+                    menuView.isNewGame = false;
+                }
+                if (!boardView.isGameStarted)
+                {
+                    boardView.isSecondPlayerMove = menuView.IsSecondPlayerMove;
+                    boardView.UpdateColor();
+                }
                 MainContent.Content = boardView;
             }
             else if (args.windowName == "menuWindow")

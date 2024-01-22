@@ -1,0 +1,20 @@
+﻿<Window x:Class="chess.PromoteDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:chess"
+        mc:Ignorable="d"
+        Title="PromoteDialog" Height="170" Width="747">
+    <Grid Margin="43,0,49,30">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,4">
+            <Button Content="Башня" FontFamily="Comic Sans MS" Width="163" Click="chooseRookButtonClick" Height="50" FontSize="15"/>
+            <StackPanel Width="5" Margin="-5,10,-5,17"/>
+            <Button Content="Слон" FontFamily="Comic Sans MS" Width="163" Click="chooseBishopButtonClick" Height="50" FontSize="15"/>
+            <StackPanel Width="5" Margin="-5,10,-5,17"/>
+            <Button Content="Конь" FontFamily="Comic Sans MS" Width="163" Click="chooseKnightButtonClick" Height="50" FontSize="15"/>
+            <StackPanel Width="5" Margin="-5,10,-5,17"/>
+            <Button Content="Ферзь" FontFamily="Comic Sans MS" Width="163" Click="chooseQueenButtonClick" Height="50" FontSize="15"/>
+        </StackPanel>
+    </Grid>
+</Window>

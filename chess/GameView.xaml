@@ -9,6 +9,39 @@
     <Grid>
         <Grid.Resources>
 
+            <Style x:Key="PopupButtonStyle" TargetType="Button">
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontWeight" Value="Bold" />
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Padding" Value="5,2" />
+                <Setter Property="HorizontalAlignment" Value="Center" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="Cursor" Value="Hand" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+                                <TextBlock Text="{TemplateBinding Content}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="TextDecorations" Value="None"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource TemplatedParent}}" Value="True">
+                                                    <Setter Property="TextDecorations" Value="Underline"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
             <!-- Стиль для дополнительного правого блока -->
             <Style x:Key="AdditionalRightBlockStyle" TargetType="Border">
                 <Setter Property="Background" Value="#80aadd"/>
@@ -16,7 +49,7 @@
                 <Setter Property="CornerRadius" Value="10"/>
                 <!-- Скругление углов -->
             </Style>
-            
+
             <!-- Стиль для дополнительного левого блока-->
             <Style x:Key="AdditionalLeftBlock" TargetType="Border">
                 <Setter Property="Background" Value="#33000000"/>
@@ -29,9 +62,9 @@
                 <!-- Толщина обводки -->
             </Style>
 
-            
-            
-            
+
+
+
 
             <!-- Стиль для обычной кнопки -->
             <Style x:Key="CustomButtonStyle" TargetType="Button">
@@ -63,7 +96,7 @@
 
         </Grid.Resources>
         <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center">
-            
+
             <Grid Name="ChessGrid"  MouseDown="ChessGrid_MouseDown" Margin="7" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Grid.Resources>
                     <!-- Стиль для основных ячеек шахматной доски -->
@@ -118,7 +151,7 @@
                         <Setter Property="HorizontalAlignment" Value="Center"/>
                         <Setter Property="VerticalAlignment" Value="Center"/>
                     </Style>
-    
+
                     <!-- Чередование цветов ячеек -->
                     <Style TargetType="Border" BasedOn="{StaticResource ChessCell}" x:Key="ChessCellWhite"  x:Name="ChessCellWhite">
                         <Setter Property="Background" Value="#E69"/>
@@ -128,19 +161,19 @@
                         <Setter Property="Background" Value="#746bb9"/>
                     </Style>
                     <Style TargetType="Border" BasedOn="{StaticResource ChessCell}" x:Key="ChessCellSelected" x:Name="ChessCellSelected">
-                        <Setter Property="Background" Value="Yellow"/>
+                        <Setter Property="Background" Value="#FFD700"/>
                     </Style>
                     <Style TargetType="Border" BasedOn="{StaticResource ChessCell}" x:Key="ChessMoveCellPers" x:Name="ChessMoveCellPers">
-                        <Setter Property="Background" Value="#A3A0B9"/> 
+                        <Setter Property="Background" Value="#FFD700"/>
                     </Style>
                     <Style TargetType="Border" BasedOn="{StaticResource ChessCell}" x:Key="ChessMoveCellNeuro" x:Name="ChessMoveCellNeuro">
-                        <Setter Property="Background" Value="#EBC4B8"/>
+                        <Setter Property="Background" Value="#FFD700"/>
                     </Style>
                     <Style TargetType="Border" BasedOn="{StaticResource ChessCell}" x:Key="ChessCellChecked" x:Name="ChessCellChecked">
                         <Setter Property="Background" Value="Red"/>
                     </Style>
 
-                    
+
 
 
 
@@ -294,7 +327,7 @@
                 </Border>
                 <Border Style="{StaticResource ChessCellBlack}" Grid.Row="1" Grid.Column="4">
                     <TextBlock Text="♛" Style="{StaticResource PlayerPers}"/>
-                </Border> 
+                </Border>
                 <Border Style="{StaticResource ChessCellWhite}" Grid.Row="1" Grid.Column="5">
                     <TextBlock Text="♚" Style="{StaticResource PlayerPers}"/>
                 </Border>
@@ -478,7 +511,7 @@
                 </Border>
                 <Border Style="{StaticResource ChessCellWhite}" Grid.Row="8" Grid.Column="4">
                     <TextBlock Text="♛" Style="{StaticResource NeuroPers}"/>
-                </Border> 
+                </Border>
                 <Border Style="{StaticResource ChessCellBlack}" Grid.Row="8" Grid.Column="5">
                     <TextBlock Text="♚" Style="{StaticResource NeuroPers}"/>
                 </Border>
@@ -518,7 +551,7 @@
                 <ScrollViewer Height="350" VerticalScrollBarVisibility="Hidden">
                     <StackPanel x:Name="history" Background="#33000000">
                     </StackPanel>
-                   
+
                 </ScrollViewer>
                 <!-- Нижний сепаратор перед изображением человека -->
                 <Separator Height="10" Background="White" Margin="0,0,0,-55"/>
@@ -545,7 +578,7 @@
                 </DataTemplate>
             </Button.ContentTemplate>
         </Button>
-        <Button Content="Сдаться" FontFamily="Comic Sans MS" FontWeight="Bold" Style="{StaticResource CustomButtonStyle}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="220,0,20,60" Width="155" Height="55">
+        <Button Content="Сдаться" Click="GiveUp_Click" FontFamily="Comic Sans MS" FontWeight="Bold" Style="{StaticResource CustomButtonStyle}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="220,0,20,60" Width="155" Height="55">
             <Button.ContentTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding}" FontSize="19"/>
@@ -554,9 +587,49 @@
         </Button>
 
         <Border x:Name="animatedBorder" Style="{StaticResource AdditionalLeftBlock}" Width="327" Height="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="47,0,10,190">
-
         </Border>
-    </Grid>
+        <!-- Попап -->
+        <Popup Name="gameResultPopup" IsOpen="False" Width="400" Height="250" Placement="Center" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Border x:Name="popupBackground" CornerRadius="10">
+                <Grid>
+                    <!-- Контент попапа -->
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Name="popupMessage" HorizontalAlignment="Center" FontWeight="Bold" FontSize="57" Margin="0,50,0,50" FontFamily="Comic Sans MS"/>
+                    </StackPanel>
 
+                    <Canvas>
+                        <Separator Width="358" Height="25" Background="White" Margin="21,150,21,66"/>
+                        <TextBlock Name="quotePopupMessage" HorizontalAlignment="Center" FontStyle="Italic" FontSize="17" Margin="0,57,0,50" FontFamily="Comic Sans MS" Foreground="White" TextWrapping="Wrap"/>
+                        <Separator Width="358" Height="25" Background="White" Margin="21,80,21,56"/>
+                    </Canvas>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,4">
+                        <Button Content="Выйти" FontFamily="Comic Sans MS" Width="163" Click="MenuButtonClick" Height="50" Style="{StaticResource PopupButtonStyle}" FontSize="25" Margin="90,170,0,17"/>
+                        <StackPanel Width="5" Margin="-5,10,-5,17"/>
+                        <Button Content="Заново" FontFamily="Comic Sans MS" Width="163" Click="RestartButtonClick" Height="50" Style="{StaticResource PopupButtonStyle}" FontSize="25" Margin="-5,170,20,17"/>
+                    </StackPanel>
+                </Grid>
+
+            </Border>
+        </Popup>
+
+        <Popup Name="giveUpPopup" IsOpen="False" Width="300" Height="150" Placement="Center" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Border x:Name="popupGiveUpBackground" CornerRadius="10">
+                <Grid>
+                    <!-- Контент попапа -->
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Вы точно хотите сдаться?" HorizontalAlignment="Center" FontWeight="Bold" FontSize="17" Margin="0,20,0,80" FontFamily="Comic Sans MS" Foreground="White"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,4">
+                        <Button Content="Да" FontFamily="Comic Sans MS" Width="163" Click="yesGiveUpButtonClick" Height="50" Style="{StaticResource PopupButtonStyle}" FontSize="15" Margin="143,70,-5,17"/>
+                        <StackPanel Width="5" Margin="-5,10,-5,17"/>
+                        <Button Content="Нет" FontFamily="Comic Sans MS" Width="163" Click="noGiveUpButtonClick" Height="50" Style="{StaticResource PopupButtonStyle}" FontSize="15" Margin="-5,70,20,17"/>
+                    </StackPanel>
+                </Grid>
+
+            </Border>
+        </Popup>
+    </Grid>
 
 </UserControl>

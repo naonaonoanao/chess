@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.Net.Http;
+using System.Net.Mail;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
@@ -9,6 +10,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
+using chess;
 using Chess;
 
 namespace uwp
@@ -21,7 +24,7 @@ namespace uwp
         private string promotionType = "";
         public bool isGameStarted = false;
 
-        private PromotionType userPromotion = PromotionType.ToQueen;
+        private PromotionType? userPromotion;
         private PromotionType? neuroPromotion;
 
         public GameView()
@@ -30,6 +33,8 @@ namespace uwp
             InitializeComponent();
             board.OnPromotePawn += HandlePromotePawn;
         }
+
+
 
         private void HandlePromotePawn(object sender, PromotionEventArgs e)
         {
@@ -41,8 +46,14 @@ namespace uwp
             }
             else
             {
-                e.PromotionResult = userPromotion;
-                promotionType = promotionDict[userPromotion];
+                var dialog = new PromoteDialog();
+                if (dialog.ShowDialog() == true)
+                {
+                    userPromotion = dialog.getUserPromotion;
+                }
+
+                e.PromotionResult = (PromotionType)userPromotion;
+                promotionType = promotionDict[(PromotionType)userPromotion];
             } 
         }
 
@@ -496,6 +507,12 @@ namespace uwp
 
         private void ApplyNeuroMove(string neuroMove)
         {
+            if (gameResultPopup.IsOpen)
+            {
+                // Если попап уже открыт, выходим из метода
+                return;
+            }
+
             isGameStarted = true;
 
             Dictionary<int, int> reversedBlackRows = ReversedDictionaryRows(blackRows);
@@ -504,69 +521,78 @@ namespace uwp
             Dictionary<string, int> reversedBlackColumnsReverse = ReversedDictionaryColumns(blackColumnsReverse);
             Dictionary<string, PromotionType> reversedPromotionDict = ReversedPromDict(promotionDict);
 
-            // Получаем значение хода нейросети
-            JsonDocument jsonDocument = JsonDocument.Parse(neuroMove);
-            jsonDocument.RootElement.TryGetProperty("neuro_move", out JsonElement neuroMoveElement);
-
-            string neuroMoveValue = neuroMoveElement.GetString();
-
-            if (neuroMoveValue.Length == 5)
+            try
             {
-                promotionType = neuroMoveValue[4].ToString();
-                neuroPromotion = reversedPromotionDict[promotionType];
+                // Получаем значение хода нейросети
+                JsonDocument jsonDocument = JsonDocument.Parse(neuroMove);
+                jsonDocument.RootElement.TryGetProperty("neuro_move", out JsonElement neuroMoveElement);
 
-                neuroMoveValue = neuroMoveValue.Substring(0, 4);
-            }
+                string neuroMoveValue = neuroMoveElement.GetString();
+
+                if (neuroMoveValue.Length == 5)
+                {
+                    promotionType = neuroMoveValue[4].ToString();
+                    neuroPromotion = reversedPromotionDict[promotionType];
+
+                    neuroMoveValue = neuroMoveValue.Substring(0, 4);
+                }
+
                 // Применяем ход к доске
-            int fromRow;
-            int fromColumn;
-            int toRow;
-            int toColumn;
+                int fromRow;
+                int fromColumn;
+                int toRow;
+                int toColumn;
 
-            // Применяем ход к доске, используя ваши существующие методы
-            string fromCell;
-            string toCell;
-            if (isSecondPlayerMove)
-            {
-                fromRow = reversedBlackRows[int.Parse(neuroMoveValue[1].ToString())];
-                fromColumn = reversedBlackColumns[neuroMoveValue[0].ToString()];
-                toRow = reversedBlackRows[int.Parse(neuroMoveValue[3].ToString())];
-                toColumn = reversedBlackColumns[neuroMoveValue[2].ToString()];
+                // Применяем ход к доске, используя ваши существующие методы
+                string fromCell;
+                string toCell;
+                if (isSecondPlayerMove)
+                {
+                    fromRow = reversedBlackRows[int.Parse(neuroMoveValue[1].ToString())];
+                    fromColumn = reversedBlackColumns[neuroMoveValue[0].ToString()];
+                    toRow = reversedBlackRows[int.Parse(neuroMoveValue[3].ToString())];
+                    toColumn = reversedBlackColumns[neuroMoveValue[2].ToString()];
 
-                fromCell = blackColumns[fromColumn] + blackRows[fromRow];
-                toCell = blackColumns[toColumn] + blackRows[toRow];
+                    fromCell = blackColumns[fromColumn] + blackRows[fromRow];
+                    toCell = blackColumns[toColumn] + blackRows[toRow];
+                }
+                else
+                {
+                    fromRow = reversedBlackRowsReverse[int.Parse(neuroMoveValue[1].ToString())];
+                    fromColumn = reversedBlackColumnsReverse[neuroMoveValue[0].ToString()];
+                    toRow = reversedBlackRowsReverse[int.Parse(neuroMoveValue[3].ToString())];
+                    toColumn = reversedBlackColumnsReverse[neuroMoveValue[2].ToString()];
+
+                    fromCell = blackColumnsReverse[fromColumn] + blackRowsReverse[fromRow];
+                    toCell = blackColumnsReverse[toColumn] + blackRowsReverse[toRow];
+                }
+
+                Move move = new Move(fromCell, toCell);
+                board.Move(move);
+
+                // Вызываем метод выделения ячеек при ходе нейронной сети
+                HighlightMovedCellsNeuro(fromRow, fromColumn, toRow, toColumn);
+
+                if (board.IsEndGame)
+                {
+                    EndGame();
+                }
+
+                SwapPieces(GetCell(fromRow, fromColumn).Child as TextBlock, GetCell(toRow, toColumn).Child as TextBlock);
+
+                if (promotionType != "")
+                {
+                    (GetCell(toRow, toColumn).Child as TextBlock).Text = piecesDict[promotionType];
+                }
+
+                neuroPromotion = null;
+                promotionType = "";
             }
-            else
+            catch (JsonException ex)
             {
-                fromRow = reversedBlackRowsReverse[int.Parse(neuroMoveValue[1].ToString())];
-                fromColumn = reversedBlackColumnsReverse[neuroMoveValue[0].ToString()];
-                toRow = reversedBlackRowsReverse[int.Parse(neuroMoveValue[3].ToString())];
-                toColumn = reversedBlackColumnsReverse[neuroMoveValue[2].ToString()];
-
-                fromCell = blackColumnsReverse[fromColumn] + blackRowsReverse[fromRow];
-                toCell = blackColumnsReverse[toColumn] + blackRowsReverse[toRow];
+                // Обработка ошибки JSON
+                Debug.WriteLine($"Error parsing neuroMove JSON: {ex.Message}");
             }
-
-            Move move = new Move(fromCell, toCell);
-            board.Move(move);
-
-            // Вызываем метод выделения ячеек при ходе нейронной сети
-            HighlightMovedCellsNeuro(fromRow, fromColumn, toRow, toColumn);
-
-            if (board.IsEndGame)
-            {
-                EndGame();
-            }
-
-            SwapPieces(GetCell(fromRow, fromColumn).Child as TextBlock, GetCell(toRow, toColumn).Child as TextBlock);
-
-            if (promotionType != "")
-            {
-                (GetCell(toRow, toColumn).Child as TextBlock).Text = piecesDict[promotionType];
-            }
-
-            neuroPromotion = null;
-            promotionType = "";
         }
 
         private Border GetCell(int row, int column)
@@ -625,9 +651,118 @@ namespace uwp
             return false;
         }
 
+        // "да" на попапе после сдаться
+        private void yesGiveUpButtonClick(object sender, RoutedEventArgs e) 
+        {
+            if (isSecondPlayerMove)
+            {
+                board.Resign(PieceColor.Black);
+            } else
+            {
+                board.Resign(PieceColor.White);
+            }
+
+            EndGame();
+        }
+
+        private void noGiveUpButtonClick(object sender, RoutedEventArgs e)
+        {
+            giveUpPopup.IsOpen = false;
+        }
+
+
+
         private void EndGame()
         {
-            throw new Exception("победили");
+            Debug.WriteLine($"Wonside - {board.EndGame.WonSide}, player is black - {isSecondPlayerMove}");
+
+            string mainMessage = "";
+            string imagePath = "";
+            string additionalMessage = "";
+
+            SolidColorBrush textColor = new SolidColorBrush();
+
+            if (board.EndGame.WonSide == null)
+            {
+                mainMessage = "Ничья";
+                additionalMessage = "Игра не закончена, пока мы умеем дышать.";
+                imagePath = "C:\\Users\\egoro\\source\\repos\\chess\\chess\\image\\Shiro_back.png";
+                textColor = Brushes.White;
+                
+            }
+            else if ((board.EndGame.WonSide.AsChar == 'w' && !isSecondPlayerMove) || (board.EndGame.WonSide.AsChar == 'b' && isSecondPlayerMove))
+            {
+                mainMessage = "Победа";
+                additionalMessage = "Шах и мат не значит, что вражеский король пал. " +
+                                    "Это лишь объявление того, что теперь он твой.";
+                imagePath = "C:\\Users\\egoro\\source\\repos\\chess\\chess\\image\\Sora_back.png";
+                textColor = Brushes.Green;
+                
+            }
+            else
+            {
+                mainMessage = "Поражение";
+                additionalMessage = "Не существует слово «поражение» для пустых.";
+                imagePath = "C:\\Users\\egoro\\source\\repos\\chess\\chess\\image\\Shiro_back.png";
+                textColor = Brushes.Red;
+                
+            }
+
+            // Показать попап с соответствующим текстом и фоном
+            ShowPopup(mainMessage, additionalMessage, imagePath, textColor);
+        }
+
+        private void GiveUp_Click(object sender, RoutedEventArgs e)
+        {
+            giveUpPopup.IsOpen = true;
+        }
+
+       
+
+        // попап при конце игры
+        private void ShowPopup(string mainMessage, string additionalMessage, string imagePath, SolidColorBrush textColor)
+        {
+            // Установить текст сообщения в текстовом блоке попапа
+            popupMessage.Text = mainMessage;
+            quotePopupMessage.Text = additionalMessage;
+
+            // Установить цвет текста
+            popupMessage.Foreground = textColor;
+
+            // Установить изображение в кисть фона
+            ImageBrush imageBrush = new ImageBrush(new BitmapImage(new Uri(imagePath, UriKind.RelativeOrAbsolute)));
+            popupBackground.Background = imageBrush;
+
+            // Отобразить попап
+            gameResultPopup.IsOpen = true;
+        }
+
+        public bool isEndGame = false;
+
+        private void MenuButtonClick(object sender, RoutedEventArgs e)
+        {
+            isEndGame = true;
+
+            string windowName = "menuWindow";
+            WindowEventArgs args = new WindowEventArgs(windowName);
+
+            RequestChangeContent?.Invoke(this, args);
+
+            gameResultPopup.IsOpen = false;
+        }
+
+
+        public bool isRestart = false;
+        private void RestartButtonClick(object sender, RoutedEventArgs e)
+        {
+            isRestart = true;
+
+            string windowName = "boardWindow";
+            WindowEventArgs args = new WindowEventArgs(windowName);
+
+            RequestChangeContent?.Invoke(this, args);
+
+            gameResultPopup.IsOpen = false;
         }
 
         //Замена фигур

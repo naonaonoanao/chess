@@ -64,6 +64,18 @@ namespace uwp
             }
             else if (args.windowName == "boardWindow")
             {
+                if (boardView.isRestart)
+                {
+                    bool isBlack = boardView.isSecondPlayerMove;
+
+                    boardView = new GameView();
+                    boardView.RequestChangeContent += RegistrationView_RequestChangeContent;
+
+                    boardView.isSecondPlayerMove = isBlack;
+                    boardView.UpdateColor();
+
+                    menuView.isNewGame = false;
+                }
                 if (menuView.isNewGame)
                 {
                     boardView = new GameView();
@@ -80,6 +92,14 @@ namespace uwp
             }
             else if (args.windowName == "menuWindow")
             {
+                if (boardView.isEndGame)
+                {
+                    boardView = new GameView();
+                    boardView.RequestChangeContent += RegistrationView_RequestChangeContent;
+
+                    menuView.isNewGame = false;
+                }
+
                 MainContent.Content = menuView;
             }
         }

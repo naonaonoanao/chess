@@ -5,16 +5,98 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:chess"
         mc:Ignorable="d"
-        Title="PromoteDialog" Height="170" Width="747">
-    <Grid Margin="43,0,49,30">
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,4">
-            <Button Content="Башня" FontFamily="Comic Sans MS" Width="163" Click="chooseRookButtonClick" Height="50" FontSize="15"/>
-            <StackPanel Width="5" Margin="-5,10,-5,17"/>
-            <Button Content="Слон" FontFamily="Comic Sans MS" Width="163" Click="chooseBishopButtonClick" Height="50" FontSize="15"/>
-            <StackPanel Width="5" Margin="-5,10,-5,17"/>
-            <Button Content="Конь" FontFamily="Comic Sans MS" Width="163" Click="chooseKnightButtonClick" Height="50" FontSize="15"/>
-            <StackPanel Width="5" Margin="-5,10,-5,17"/>
-            <Button Content="Ферзь" FontFamily="Comic Sans MS" Width="163" Click="chooseQueenButtonClick" Height="50" FontSize="15"/>
+        Title="PromoteDialog" Height="136" Width="507"
+        WindowStyle="None" AllowsTransparency="True" Background="#66000000"
+        WindowStartupLocation="CenterScreen" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
+        ShowInTaskbar="False">
+   
+    <Window.Resources>
+        <Style x:Key="PromoteButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#adee" />
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="BorderBrush" Value="White" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border CornerRadius="10" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
+                                        To="White" Duration="0:0:0.2" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
+                                        To="#adee" Duration="0:0:0.2" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PromoteButtonTextStyle" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="60"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect ShadowDepth="0" BlurRadius="5" Color="Red"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <ControlTemplate x:Key="WindowTemplate" TargetType="Window">
+            <Border Background="{TemplateBinding Background}">
+                <ContentPresenter/>
+            </Border>
+        </ControlTemplate>
+    </Window.Resources>
+    <Grid Margin="43,30,43,30">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,2,0,2">
+            <Button Content="♖" Style="{StaticResource PromoteButtonStyle}" FontFamily="Comic Sans MS" Width="90" Click="chooseRookButtonClick" Height="70">
+                <Button.ContentTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" Style="{StaticResource PromoteButtonTextStyle}"/>
+                    </DataTemplate>
+                </Button.ContentTemplate>
+            </Button>
+            <StackPanel Width="5" Margin="7,10,7,10"/>
+            <Button Content="♗" Style="{StaticResource PromoteButtonStyle}" FontFamily="Comic Sans MS" Width="90" Click="chooseBishopButtonClick" Height="70">
+                <Button.ContentTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" Style="{StaticResource PromoteButtonTextStyle}"/>
+                    </DataTemplate>
+                </Button.ContentTemplate>
+            </Button>
+            <StackPanel Width="5" Margin="7,10,7,17"/>
+            <Button Content="♘" Style="{StaticResource PromoteButtonStyle}" FontFamily="Comic Sans MS" Width="90" Click="chooseKnightButtonClick" Height="70">
+                <Button.ContentTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" Style="{StaticResource PromoteButtonTextStyle}"/>
+                    </DataTemplate>
+                </Button.ContentTemplate>
+            </Button>
+            <StackPanel Width="5" Margin="7,10,7,17"/>
+            <Button Content="♕" Style="{StaticResource PromoteButtonStyle}" FontFamily="Comic Sans MS" Width="90" Click="chooseQueenButtonClick" Height="70">
+                <Button.ContentTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" Style="{StaticResource PromoteButtonTextStyle}"/>
+                    </DataTemplate>
+                </Button.ContentTemplate>
+            </Button>
         </StackPanel>
     </Grid>
 </Window>

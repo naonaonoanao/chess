@@ -15,9 +15,6 @@ using System.Windows.Shapes;
 
 namespace chess
 {
-    /// <summary>
-    /// Логика взаимодействия для PromoteDialog.xaml
-    /// </summary>
     public partial class PromoteDialog : Window
     {
         private PromotionType userPromotion;

@@ -10,7 +10,8 @@
         <SolidColorBrush x:Key="TextBox.Static.Border" Color="#FFABAdB3"/>
         <SolidColorBrush x:Key="TextBox.MouseOver.Border" Color="#FF7EB4EA"/>
         <SolidColorBrush x:Key="TextBox.Focus.Border" Color="#FF569DE5"/>
-
+        
+        <!--Стиль для кнопки Войти-->
         <Style x:Key="LoginButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="#FFA500" />
             <Setter Property="Foreground" Value="White" />
@@ -45,6 +46,8 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        
+        <!--Стиль для поля ввода логина-->
         <Style x:Key="LoginTextBox" TargetType="{x:Type TextBox}">
             <Setter Property="Foreground" Value="Black"/>
             <Setter Property="Opacity" Value="1"/>
@@ -64,7 +67,7 @@
                             <Border x:Name="border" CornerRadius="7" Background="White" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True"/>
                             <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" Margin="0,0,10,0"/>
                             <TextBlock x:Name="LoginTextBlock" Text="{TemplateBinding Tag}" Foreground="Black" IsHitTestVisible="False" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/>
-                            <Image Source="C:\Users\egoro\source\repos\chess\chess\image\email_icon.png" Height="28" Margin="327,8,10,7" Panel.ZIndex="1"/>
+                            <Image Source="image\email_icon.png" Height="28" Margin="327,8,10,7" Panel.ZIndex="1"/>
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsEnabled" Value="false">
@@ -90,6 +93,8 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        
+        <!--Стиль для поля ввода пароля-->
         <Style x:Key="PasswordTextBox" TargetType="{x:Type PasswordBox}">
             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
             <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
@@ -108,7 +113,7 @@
                             <Border x:Name="border" CornerRadius="7" Background="White" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True"/>
                             <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
                             <TextBlock x:Name="LoginTextBlock" Text="{TemplateBinding Tag}" Foreground="Black" IsHitTestVisible="False" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/>
-                            <Image Source="C:\Users\egoro\source\repos\chess\chess\image\password_icon.png" Margin="321,0,4,-1" Panel.ZIndex="1"/>
+                            <Image Source="image\password_icon.png" Margin="321,0,4,-1" Panel.ZIndex="1"/>
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsEnabled" Value="false">
@@ -131,6 +136,8 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        
+        <!--Cтиль для кнопок внизу -->
         <Style x:Key="LinkButtonStyle" TargetType="Button">
             <Setter Property="Foreground" Value="White" />
             <Setter Property="Background" Value="Transparent" />
@@ -163,29 +170,12 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <!-- Добавлен стиль для основной сетки для управления фоном и размером -->
+        
+        <!-- Стиль для основной сетки для управления фоном и размером -->
         <Style x:Key="MainGridStyle" TargetType="Grid">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
-        </Style>
-        <!-- Добавлен стиль для глазка, отображающего/скрывающего пароль -->
-        <Style x:Key="PasswordToggleEyeStyle" TargetType="ToggleButton">
-            <Setter Property="Content" Value="&#xE109;" />
-            <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
-            <Setter Property="FontSize" Value="16"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Padding" Value="5"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="HorizontalAlignment" Value="Right"/>
-            <Setter Property="Cursor" Value="Hand"/>
-        </Style>
-        <!-- Добавлен стиль для глазка, отображающего/скрывающего пароль в активном состоянии -->
-        <Style x:Key="PasswordToggleEyeCheckedStyle" TargetType="ToggleButton" BasedOn="{StaticResource PasswordToggleEyeStyle}">
-            <Setter Property="Content" Value="&#xE10E;" />
         </Style>
     </UserControl.Resources>
 
@@ -205,8 +195,6 @@
                 <Border BorderBrush="White" BorderThickness="1" CornerRadius="10" Margin="0,20,0,0">
                     <Grid>
                         <PasswordBox Style="{StaticResource PasswordTextBox}" x:Name="PasswordBox" Width="363" Height="44" Padding="5" Tag="Пароль" PasswordChanged="PasswordBox_PasswordChanged" FontSize="17" VerticalContentAlignment="Center" Opacity="0.2"/>
-                        <!-- Добавлен ToggleButton для отображения/скрытия пароля -->
-                        <CheckBox Style="{StaticResource PasswordToggleEyeStyle}" IsChecked="{Binding IsChecked, ElementName=PasswordToggle}" />
                     </Grid>
                 </Border>
                 <Grid HorizontalAlignment="Left" Margin="0,15,0,0">
@@ -216,13 +204,12 @@
                     </Grid.ColumnDefinitions>
                     <CheckBox Content="Запомнить пароль" x:Name="RememberPasswordBox" Foreground="White" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Right"  Margin="5,0,0,0" />
                 </Grid>
-                <TextBlock x:Name="ErrorMessage" Foreground="Red" Visibility="Hidden" Margin="0,10"/>
-                <Button Content="Войти" Width="280" Click="LoginButton_Click" Height="45" Style="{StaticResource LoginButtonStyle}" FontSize="17"/>
+                <TextBlock x:Name="ErrorMessage" Foreground="Red" Visibility="Hidden"/>
+                <Button Content="Войти" Width="280" Click="LoginButton_Click" Height="45" Style="{StaticResource LoginButtonStyle}" FontSize="17" Margin="0,10,0,0"/>
                 <Separator Width="358" Height="34"/>
 
                 <Grid HorizontalAlignment="Left">
-                    <Button Content="Забыли пароль?" Click="ForgotPasswordWindow"
-    Style="{StaticResource LinkButtonStyle}" Width="179" HorizontalAlignment="Left" Margin="33,0,0,0"/>
+                    <Button Content="Забыли пароль?" Click="ForgotPasswordWindow" Style="{StaticResource LinkButtonStyle}" Width="179" HorizontalAlignment="Left" Margin="33,0,0,0"/>
                 </Grid>
 
                 <Grid HorizontalAlignment="Right">
@@ -230,27 +217,24 @@
                         <ColumnDefinition Width="151*"/>
                         <ColumnDefinition Width="87*"/>
                     </Grid.ColumnDefinitions>
-                    <Button Content="Регистрация" Click="RegistrationWindow"
-    Style="{StaticResource LinkButtonStyle}" Height="23" Width="153" Margin="-20,-22,0,0" VerticalAlignment="Top" Grid.Column="1" HorizontalAlignment="Left"  />
+                    <Button Content="Регистрация" Click="RegistrationWindow" Style="{StaticResource LinkButtonStyle}" Height="23" Width="153" Margin="-20,-22,0,0" VerticalAlignment="Top" Grid.Column="1" HorizontalAlignment="Left"  />
                 </Grid>
             </StackPanel>
             <Border.Effect>
                 <DropShadowEffect Color="White" BlurRadius="50" ShadowDepth="0"/>
             </Border.Effect>
         </Border>
-        <!-- Добавляем всплыващее окно ошибок для пароля -->
+        <!--Всплыващее окно ошибок для пароля -->
         <Popup x:Name="ErrorPopupPassword" IsOpen="False" PlacementTarget="{Binding ElementName=PasswordBox}" Placement="Right" StaysOpen="False">
-            <Border Background="White" BorderBrush="Red" BorderThickness="1" CornerRadius="5">
+            <Border Background="White" BorderBrush="Red" BorderThickness="1">
                 <TextBlock Text="{Binding ElementName=ErrorMessage, Path=Text}" Foreground="Red" Padding="5"/>
             </Border>
         </Popup>
-        <!-- Добавляем всплыващее окно ошибок для логина -->
+        <!--Всплыващее окно ошибок для логина -->
         <Popup x:Name="ErrorPopupLogin" IsOpen="False" PlacementTarget="{Binding ElementName=UsernameTextBox}" Placement="Right" StaysOpen="False">
-            <Border Background="White" BorderBrush="Red" BorderThickness="1" CornerRadius="5">
+            <Border Background="White" BorderBrush="Red" BorderThickness="1">
                 <TextBlock Text="{Binding ElementName=ErrorMessage, Path=Text}" Foreground="Red" Padding="5"/>
             </Border>
         </Popup>
     </Grid>
-
-
 </UserControl>

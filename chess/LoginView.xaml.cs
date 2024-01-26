@@ -17,9 +17,6 @@ using uwp;
 
 namespace uwp
 {
-    /// <summary>
-    /// Логика взаимодействия для LoginView.xaml
-    /// </summary>
     public partial class LoginView : UserControl
     {
         public event EventHandler RequestChangeContent;
@@ -30,13 +27,11 @@ namespace uwp
             UsernameTextBox.TextChanged += UsernameTextBox_TextChanged;
         }
 
-        private const int МАКСИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ПАРОЛЯ = 20;
-        //private const int МИНИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ПАРОЛЯ = 12;
-        private const int МИНИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ПАРОЛЯ = 0;
+        private const int maxQualityCharPassword = 20;
+        private const int minQualityCharPassword = 8;
 
-        private const int МАКСИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ЛОГИНА = 25;
-        //private const int МИНИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ЛОГИНА = 12;
-        private const int МИНИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ЛОГИНА = 0;
+        private const int maxQualityCharLogin = 25;
+        private const int minQualityCharLogin = 8;
 
         private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
@@ -50,11 +45,11 @@ namespace uwp
                 loginTextBlock.Visibility = Visibility.Collapsed;
             }
             // Проверка ограничения по количеству символов
-            if (PasswordBox.Password.Length > МАКСИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ПАРОЛЯ)
+            if (PasswordBox.Password.Length > maxQualityCharPassword)
             {
                 ShowErrorPopupPassword("Слишком длинный пароль");
             } 
-            else if (PasswordBox.Password.Length < МИНИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ПАРОЛЯ)
+            else if (PasswordBox.Password.Length < minQualityCharPassword)
             {
                 ShowErrorPopupPassword("Слишком короткий пароль");
             }
@@ -79,12 +74,13 @@ namespace uwp
         private void UsernameTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             TextBox usernameTextBox = sender as TextBox;
+
             // Проверка ограничения по количеству символов
-            if (usernameTextBox.Text.Length > МАКСИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ЛОГИНА)
+            if (usernameTextBox.Text.Length > maxQualityCharLogin)
             {
                 ShowErrorPopupLogin("Слишком длинный логин");
             }
-            else if (usernameTextBox.Text.Length < МИНИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ЛОГИНА)
+            else if (usernameTextBox.Text.Length < minQualityCharLogin)
             {
                 ShowErrorPopupLogin("Слишком короткий логин");
             }
@@ -93,7 +89,6 @@ namespace uwp
                 HideErrorPopupLogin();
             }
         }
-
 
         private void ShowErrorPopupLogin(string errorMessage)
         {
@@ -107,6 +102,7 @@ namespace uwp
             ErrorPopupLogin.IsOpen = false;
         }
 
+        public string login;
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             var userRepository = new UserRepository();
@@ -118,79 +114,78 @@ namespace uwp
             bool isPasswordError = false;
 
             // Проверка длины логина
-            if (username.Length > МАКСИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ЛОГИНА || username.Length < МИНИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ЛОГИНА)
+            if (username.Length > maxQualityCharLogin || username.Length < minQualityCharLogin)
             {
                 isLoginError = true;
             }
 
             // Проверка длины пароля
-            if (password.Length > МАКСИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ПАРОЛЯ || password.Length < МИНИМАЛЬНОЕ_КОЛИЧЕСТВО_СИМВОЛОВ_ПАРОЛЯ)
+            if (password.Length > maxQualityCharPassword || password.Length < minQualityCharPassword)
             {
                 isPasswordError = true;
             }
 
-            // Отображение соответствующих окон ошибок
-            if (isLoginError && isPasswordError)
+            if (username == string.Empty)
             {
-                ShowErrorPopupLogin("Недопустимая длина логина");
-                ShowErrorPopupPassword("Недопустимая длина пароля");
+                ShowErrorPopupLogin("Введите логин!");
+                return;
             }
-            else if (isLoginError)
+
+            if (password == string.Empty)
             {
-                ShowErrorPopupLogin("Недопустимая длина логина");
-                HideErrorPopupPassword(); // Скрываем окно ошибок для пароля
+                ShowErrorPopupPassword("Введите пароль!");
+                return;
             }
-            else if (isPasswordError)
-            {
-                ShowErrorPopupPassword("Недопустимая длина пароля");
-                HideErrorPopupLogin(); // Скрываем окно ошибок для логина
-            }
+
             else
             {
-                // Оба условия не нарушены, продолжаем проверку и вход
-                HideErrorPopupLogin(); // Скрываем окно ошибок для логина
-                HideErrorPopupPassword(); // Скрываем окно ошибок для пароля
-
-                if (username == string.Empty)
+                // Отображение соответствующих окон ошибок
+                if (isLoginError && isPasswordError)
                 {
-                    ShowErrorPopupLogin("Введите логин!");
-                    return;
-                }
-
-                if (password == string.Empty)
-                {
-                    ShowErrorPopupPassword("Введите пароль!");
-                    return;
-                }
-
-                if (userRepository.VerifyUser(username, password))
-                {
-                    failedLoginAttempts = 0;
-                    ErrorMessage.Text = "Вход успешен";
+                    ErrorMessage.Text = "Недопустимая длина логина или пароля.";
                     ErrorMessage.Visibility = Visibility.Visible;
-
-                    // переход на меню
-
-                    UsernameTextBox.Clear();
-                    PasswordBox.Clear();
-                    RememberPasswordBox.IsChecked = false;
-
-                    ErrorMessage.Visibility = Visibility.Collapsed;
-
-                    string windowName = "menuWindow";
-                    WindowEventArgs args = new WindowEventArgs(windowName);
-
-                    RequestChangeContent?.Invoke(this, args);
+                }
+                else if (isLoginError)
+                {
+                    ErrorMessage.Text = "Недопустимая длина логина.";
+                    ErrorMessage.Visibility = Visibility.Visible;
+                }
+                else if (isPasswordError)
+                {
+                    ErrorMessage.Text = "Недопустимая длина пароля.";
+                    ErrorMessage.Visibility = Visibility.Visible;
                 }
                 else
                 {
-                    failedLoginAttempts++;
-                    ErrorMessage.Text = "Неправильный логин или пароль";
-                    ErrorMessage.Visibility = Visibility.Visible;
+                    if (userRepository.VerifyUser(username, password))
+                    {
+                        login = username;
+                        failedLoginAttempts = 0;
+                        ErrorMessage.Text = "Вход успешен.";
+                        ErrorMessage.Visibility = Visibility.Visible;
+
+                        // переход на меню
+                        UsernameTextBox.Clear();
+                        PasswordBox.Clear();
+                        RememberPasswordBox.IsChecked = false;
+
+                        ErrorMessage.Visibility = Visibility.Collapsed;
+
+                        string windowName = "menuWindow";
+                        WindowEventArgs args = new WindowEventArgs(windowName);
+
+                        RequestChangeContent?.Invoke(this, args);
+                    }
+                    else
+                    {
+                        failedLoginAttempts++;
+                        ErrorMessage.Text = "Неправильный логин или пароль.";
+                        ErrorMessage.Visibility = Visibility.Visible;
+                    }
+
                 }
             }
         }
-
 
         private void RegistrationWindow(object sender, RoutedEventArgs e)
         {

@@ -21,12 +21,46 @@ namespace uwp
         public ForgotPasswordView()
         {
             InitializeComponent();
+            RegUsernameTextBox.TextChanged += RegUsernameTextBox_TextChanged;
         }
 
+        private const int maxQualityCharLogin = 25;
+        private const int minQualityCharLogin = 8;
+
+        private void RegUsernameTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox regUsernameTextBox = sender as TextBox;
+
+            // Проверка ограничения по количеству символов
+            if (regUsernameTextBox.Text.Length > maxQualityCharLogin)
+            {
+                ShowErrorPopupSend("Недопустимое количество символов");
+            }
+            else if (regUsernameTextBox.Text.Length < minQualityCharLogin)
+            {
+                ShowErrorPopupSend("Недопустимое количество символов");
+            }
+            else
+            {
+                HideErrorPopupSend();
+            }
+        }
+        private void ShowErrorPopupSend(string errorMessage)
+        {
+            ErrorMessage.Text = errorMessage;
+            ErrorPopupSend.IsOpen = true;
+        }
+
+        private void HideErrorPopupSend()
+        {
+            ErrorMessage.Text = string.Empty;
+            ErrorPopupSend.IsOpen = false;
+        }
 
         private void BackToLoginWindow(object sender, RoutedEventArgs e)
         {
             RegUsernameTextBox.Clear();
+            ErrorMessage.Visibility = Visibility.Collapsed;
 
             string windowName = "loginWindow";
             WindowEventArgs args = new WindowEventArgs(windowName);
@@ -38,6 +72,14 @@ namespace uwp
         {
             string username = RegUsernameTextBox.Text;
 
+            bool isLoginError = false;
+
+            // Проверка длины логина
+            if (username.Length > maxQualityCharLogin || username.Length < minQualityCharLogin)
+            {
+                isLoginError = true;
+            }
+
             if (username == string.Empty)
             {
                 ErrorMessage.Text = "Введите почту!";
@@ -46,15 +88,26 @@ namespace uwp
                 return;
             }
 
-            try
+            else
             {
-                ErrorMessage.Text = "Инструкция по восстановлению пароля отправлена на почту.";
-                ErrorMessage.Visibility = Visibility.Visible;
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage.Text = "Инструкция уже отправлена. Проверьте вашу почту.";
-                ErrorMessage.Visibility = Visibility.Visible;
+                if (isLoginError)
+                {
+                    ErrorMessage.Text = "Недопустимое количество символов.";
+                    ErrorMessage.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    try
+                    {
+                        ErrorMessage.Text = "Инструкция по восстановлению пароля отправлена на почту.";
+                        ErrorMessage.Visibility = Visibility.Visible;
+                    }
+                    catch (Exception ex)
+                    {
+                        ErrorMessage.Text = "Инструкция уже отправлена. Проверьте вашу почту.";
+                        ErrorMessage.Visibility = Visibility.Visible;
+                    }
+                }
             }
         }
     }

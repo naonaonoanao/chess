@@ -17,9 +17,6 @@ using System.Windows.Shapes;
 
 namespace uwp
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         LoginView loginView = new LoginView();
@@ -27,6 +24,7 @@ namespace uwp
         ForgotPasswordView forgotPasswordView = new ForgotPasswordView();
         GameView boardView = new GameView();
         MenuView menuView = new MenuView();
+
 
         public MainWindow()
         {
@@ -68,17 +66,18 @@ namespace uwp
                 {
                     bool isBlack = boardView.isSecondPlayerMove;
 
-                    boardView = new GameView();
+                    boardView = new GameView(menuView.isMinimax);
                     boardView.RequestChangeContent += RegistrationView_RequestChangeContent;
 
                     boardView.isSecondPlayerMove = isBlack;
+                    
                     boardView.UpdateColor();
 
                     menuView.isNewGame = false;
                 }
                 if (menuView.isNewGame)
                 {
-                    boardView = new GameView();
+                    boardView = new GameView(menuView.isMinimax);
                     boardView.RequestChangeContent += RegistrationView_RequestChangeContent;
 
                     menuView.isNewGame = false;
@@ -88,13 +87,14 @@ namespace uwp
                     boardView.isSecondPlayerMove = menuView.IsSecondPlayerMove;
                     boardView.UpdateColor();
                 }
+                boardView.login = loginView.login;
                 MainContent.Content = boardView;
             }
             else if (args.windowName == "menuWindow")
             {
                 if (boardView.isEndGame)
                 {
-                    boardView = new GameView();
+                    boardView = new GameView(menuView.isMinimax);
                     boardView.RequestChangeContent += RegistrationView_RequestChangeContent;
 
                     menuView.isNewGame = false;

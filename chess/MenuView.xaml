@@ -11,18 +11,7 @@
         <SolidColorBrush x:Key="TextBox.MouseOver.Border" Color="#FF7EB4EA"/>
         <SolidColorBrush x:Key="TextBox.Focus.Border" Color="#FF569DE5"/>
 
-        <Style x:Key="HighlightButtonStyle" TargetType="Button">
-            <Setter Property="BorderBrush" Value="Transparent"/>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="BorderBrush" Value="Purple"/>
-                </Trigger>
-                <Trigger Property="IsPressed" Value="True">
-                    <Setter Property="BorderBrush" Value="Purple"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
+        <!--Стиль для кнопки Создать игру и Продолжить игру-->
         <Style x:Key="CreateGameButton" TargetType="Button">
             <Setter Property="Background" Value="#FFA500" />
             <Setter Property="Foreground" Value="White" />
@@ -58,6 +47,7 @@
             </Setter>
         </Style>
 
+        <!--Стиль для кнопки Выход-->
         <Style x:Key="LinkBackButtonStyle" TargetType="Button">
             <Setter Property="Foreground" Value="White" />
             <Setter Property="Background" Value="Transparent" />
@@ -91,7 +81,7 @@
             </Setter>
         </Style>
 
-        <!-- Добавлен стиль для основной сетки для управления фоном и размером -->
+        <!--Стиль для основной сетки для управления фоном и размером -->
         <Style x:Key="MainGridStyle" TargetType="Grid">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
@@ -109,18 +99,16 @@
             </Border.Background>
             <StackPanel Margin="11,4,9,10">
                 <TextBlock Text="Меню" HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" Margin="0,20,0,0" Height="39" Foreground="White"/>
-
                 <!-- Выбор цвета -->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,1,0,9" Width="352">
                     <TextBlock Text="Цвет: " FontWeight="Bold" FontSize="16" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="8">
-
-                        <Button x:Name="blackColorButton" Width="40" Height="40" Margin="5" Click="BlackColor_Click"
-        MouseEnter="Button_MouseEnter" MouseLeave="Button_MouseLeave">
+                        <!--Кнопка чёрный цвет-->
+                        <Button x:Name="blackColorButton" Width="40" Height="40" Margin="5" Click="BlackColor_Click" MouseEnter="Button_MouseEnter" MouseLeave="Button_MouseLeave">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
                                     <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1">
-                                        <Image Source="C:\Users\egoro\source\repos\chess\chess\image\black_color.png" />
+                                        <Image Source="image\black_color.png" />
                                     </Border>
                                 </ControlTemplate>
                             </Button.Template>
@@ -128,29 +116,33 @@
                         <TextBlock Text="Черный" VerticalAlignment="Center" Foreground="White" FontSize="16"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="8">
-
-                        <Button x:Name="whiteColorButton" Width="40" Height="40" Margin="5" Click="WhiteColor_Click"
-        MouseEnter="Button_MouseEnter" MouseLeave="Button_MouseLeave">
+                        <!--Кнопка белый цвет-->
+                        <Button x:Name="whiteColorButton" Width="40" Height="40" Margin="5" Click="WhiteColor_Click" MouseEnter="Button_MouseEnter" MouseLeave="Button_MouseLeave">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
                                     <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1">
-                                        <Image Source="C:\Users\egoro\source\repos\chess\chess\image\white_color.png"/>
+                                        <Image Source="image\white_color.png"/>
                                     </Border>
                                 </ControlTemplate>
                             </Button.Template>
                         </Button>
-
                         <TextBlock Text="Белый" VerticalAlignment="Center" Foreground="White" FontSize="16"/>
                     </StackPanel>
                 </StackPanel>
-
-                <!-- Выбор уровня сложности -->
+                <!--Выбор уровня сложности-->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10" Width="352">
                     <TextBlock Text="Уровень сложности: " FontWeight="Bold" FontSize="16" Foreground="White" VerticalAlignment="Center" Width="198"/>
-                    <ComboBox Width="156" Height="25" SelectionChanged="Difficulty_SelectionChanged">
+                    <ComboBox Width="156" Height="25" x:Name ="difficultyComboBox" SelectionChanged="Difficulty_SelectionChanged">
+                        <ComboBox.Style>
+                            <Style TargetType="ComboBox">
+                                <Setter Property="Background" Value="#FF6A5A"/>
+                                <Setter Property="BorderBrush" Value="White"/>
+                                <Setter Property="BorderThickness" Value="1"/>
+                            </Style>
+                        </ComboBox.Style>
                         <ComboBox.ItemContainerStyle>
                             <Style TargetType="ComboBoxItem">
-                                <Setter Property="Background" Value="#FFAAEE" />
+                                <Setter Property="Background" Value="#FF6A8D" />
                             </Style>
                         </ComboBox.ItemContainerStyle>
                         <ComboBox.ItemTemplate>
@@ -161,10 +153,10 @@
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                         <ComboBoxItem Content="Легкий"/>
-                        <ComboBoxItem Content="Средний"/>
                         <ComboBoxItem Content="Сложный"/>
                     </ComboBox>
                 </StackPanel>
+                <TextBlock x:Name="ErrorMessage" Foreground="Red" Visibility="Hidden" Margin="0,4,0,-3"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,21,0,4">
                     <Button Content="Создать игру" Width="163" Click="CreateGame_Click" Height="50" Style="{StaticResource CreateGameButton}" FontSize="15" Margin="0,5"/>
                     <StackPanel Width="20"/>
@@ -178,6 +170,4 @@
             </Border.Effect>
         </Border>
     </Grid>
-
-
 </UserControl>

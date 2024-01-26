@@ -15,9 +15,6 @@ using System.Windows.Shapes;
 
 namespace uwp
 {
-    /// <summary>
-    /// Логика взаимодействия для MenuWindow.xaml
-    /// </summary>
     public partial class MenuView : UserControl
     {
         public event EventHandler RequestChangeContent;
@@ -30,9 +27,8 @@ namespace uwp
 
 
         private bool isButtonHighlighted = false;
-
-
         private Button lastClickedButton = null;
+
 
         private void BlackColor_Click(object sender, RoutedEventArgs e)
         {
@@ -60,7 +56,7 @@ namespace uwp
                 // Применяем подсветку при наведении курсора, если кнопка не была нажата
                 SolidColorBrush borderBrush = new SolidColorBrush(Colors.Yellow);
                 button.BorderBrush = borderBrush;
-                button.BorderThickness = new Thickness(2); // Толщина рамки
+                button.BorderThickness = new Thickness(2);
             }
         }
 
@@ -100,28 +96,70 @@ namespace uwp
             }
         }
 
-
-
-
-
+        public bool isMinimax = true;
         private void Difficulty_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Console.WriteLine("Difficulty changed");
-            // Здесь добавьте свою логику для обработки изменения уровня сложности
+            if (sender is ComboBox comboBox)
+            {
+                if (comboBox.SelectedItem is ComboBoxItem selectedItem)
+                {
+                    string selectedDifficulty = selectedItem.Content.ToString();
+                    
+                    if (selectedDifficulty == "Легкий")
+                    {
+                        isMinimax = false;
+                    }
+                    else if (selectedDifficulty == "Сложный")
+                    {
+                        isMinimax = true;
+                    }
+                }
+            }
         }
 
         private void CreateGame_Click(object sender, RoutedEventArgs e)
         {
-            isNewGame = true;
+            bool isColorSelected = isButtonHighlighted;
+            bool isDifficultySelected = ((ComboBoxItem)difficultyComboBox.SelectedItem)?.Content != null;
 
-            string windowName = "boardWindow";
-            WindowEventArgs args = new WindowEventArgs(windowName);
+            if (!isColorSelected && !isDifficultySelected)
+            {
+                ErrorMessage.Text = "Выберите цвет и уровень сложности";
+                ErrorMessage.Visibility = Visibility.Visible;
+            }
+            else if (!isColorSelected)
+            {
+                ErrorMessage.Text = "Выберите цвет";
+                ErrorMessage.Visibility = Visibility.Visible;
+            }
+            else if (!isDifficultySelected)
+            {
+                ErrorMessage.Text = "Выберите уровень сложности";
+                ErrorMessage.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                ResetColorSelection();
 
-            RequestChangeContent?.Invoke(this, args);
+                ResetDifficultySelection();
+
+                ErrorMessage.Visibility = Visibility.Hidden;
+                isNewGame = true;
+
+                string windowName = "boardWindow";
+                WindowEventArgs args = new WindowEventArgs(windowName);
+
+                RequestChangeContent?.Invoke(this, args);
+            }
         }
 
         private void ContinueGame_Click(object sender, RoutedEventArgs e)
         {
+            ResetColorSelection();
+
+            ResetDifficultySelection();
+
+            ErrorMessage.Visibility = Visibility.Hidden;
             string windowName = "boardWindow";
             WindowEventArgs args = new WindowEventArgs(windowName);
 
@@ -130,10 +168,31 @@ namespace uwp
 
         private void BackToLoginWindow(object sender, RoutedEventArgs e)
         {
+            ResetColorSelection();
+
+            ResetDifficultySelection();
+
+            ErrorMessage.Visibility = Visibility.Hidden;
             string windowName = "loginWindow";
             WindowEventArgs args = new WindowEventArgs(windowName);
 
             RequestChangeContent?.Invoke(this, args);
+        }
+
+        private void ResetColorSelection()
+        {
+            isButtonHighlighted = false;
+            lastClickedButton = null;
+
+            // Снимаем подсветку с кнопок выбора цвета
+            SolidColorBrush transparentBrush = new SolidColorBrush(Colors.Transparent);
+            blackColorButton.BorderBrush = transparentBrush;
+            whiteColorButton.BorderBrush = transparentBrush;
+        }
+
+        private void ResetDifficultySelection()
+        {
+            difficultyComboBox.SelectedIndex = -1;
         }
     }
 }

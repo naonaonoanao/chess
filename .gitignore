@@ -26,12 +26,15 @@
 *.a
 *.lib
 chess/obj/
+NunitTests/obj/
+Tests/obj
 
 # Executables
 *.exe
 *.out
 *.app
 chess/bin/
+Tests/bin/
 
 # IDE
 .vs/

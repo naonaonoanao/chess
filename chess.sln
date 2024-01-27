@@ -6,14 +6,8 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "chess", "chess\chess.csproj", "{75825614-4182-443D-9E10-CA93940EE24B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решения", "Элементы решения", "{CC34F62D-DC9C-4781-A37B-537F8DDF21A2}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\..\OneDrive\Рабочий стол\fingerprint.pb = ..\..\..\OneDrive\Рабочий стол\fingerprint.pb
-		..\..\..\OneDrive\Рабочий стол\keras_metadata.pb = ..\..\..\OneDrive\Рабочий стол\keras_metadata.pb
-		..\..\..\Downloads\model = ..\..\..\Downloads\model
-		..\..\..\OneDrive\Рабочий стол\saved_model.pb = ..\..\..\OneDrive\Рабочий стол\saved_model.pb
-		..\..\..\OneDrive\Рабочий стол\variables\variables.data-00000-of-00001 = ..\..\..\OneDrive\Рабочий стол\variables\variables.data-00000-of-00001
-		..\..\..\OneDrive\Рабочий стол\variables\variables.index = ..\..\..\OneDrive\Рабочий стол\variables\variables.index
-	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{15991F3C-AA9F-4F97-A2A7-8C80D5C85392}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,6 +19,10 @@ Global
 		{75825614-4182-443D-9E10-CA93940EE24B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{75825614-4182-443D-9E10-CA93940EE24B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{75825614-4182-443D-9E10-CA93940EE24B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15991F3C-AA9F-4F97-A2A7-8C80D5C85392}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15991F3C-AA9F-4F97-A2A7-8C80D5C85392}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15991F3C-AA9F-4F97-A2A7-8C80D5C85392}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15991F3C-AA9F-4F97-A2A7-8C80D5C85392}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

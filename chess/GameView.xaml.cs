@@ -119,7 +119,7 @@ namespace uwp
             }
         }
 
-        private const string ServerUrl = "http://localhost:8000/";
+        private const string ServerUrl = "http://89.23.106.97:6565/";
 
         private TextBlock? selectedCell;
 

@@ -5,4 +5,169 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:uwp"
         mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="TextBox.Static.Border" Color="#FFABAdB3"/>
+        <SolidColorBrush x:Key="TextBox.MouseOver.Border" Color="#FF7EB4EA"/>
+        <SolidColorBrush x:Key="TextBox.Focus.Border" Color="#FF569DE5"/>
+
+        <!--Стиль для кнопки Создать игру и Продолжить игру-->
+        <Style x:Key="CreateGameButton" TargetType="Button">
+            <Setter Property="Background" Value="#FFA500" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border CornerRadius="10" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
+                                                    To="#FFFF0000" Duration="0:0:0.2" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
+                                                    To="#FFA500" Duration="0:0:0.2" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--Стиль для кнопки Выход-->
+        <Style x:Key="LinkBackButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="5,2" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+                            <TextBlock Text="{TemplateBinding Content}">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="TextDecorations" Value="None"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource TemplatedParent}}" Value="True">
+                                                <Setter Property="TextDecorations" Value="Underline"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--Стиль для основной сетки для управления фоном и размером -->
+        <Style x:Key="MainGridStyle" TargetType="Grid">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Style="{StaticResource MainGridStyle}">
+        <Border CornerRadius="10" HorizontalAlignment="Center" Width="383" Opacity="1">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#FF6A5A" Offset="0"/>
+                    <GradientStop Color="#FF4B0082" Offset="0.9"/>
+                </LinearGradientBrush>
+            </Border.Background>
+            <StackPanel Margin="11,4,9,10">
+                <TextBlock Text="Меню" HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" Margin="0,20,0,0" Height="39" Foreground="White"/>
+                <!-- Выбор цвета -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,1,0,9" Width="352">
+                    <TextBlock Text="Цвет: " FontWeight="Bold" FontSize="16" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="8">
+                        <!--Кнопка чёрный цвет-->
+                        <Button x:Name="blackColorButton" Width="40" Height="40" Margin="5" Click="BlackColor_Click" MouseEnter="Button_MouseEnter" MouseLeave="Button_MouseLeave">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1">
+                                        <Image Source="image\black_color.png" />
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                        <TextBlock Text="Черный" VerticalAlignment="Center" Foreground="White" FontSize="16"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="8">
+                        <!--Кнопка белый цвет-->
+                        <Button x:Name="whiteColorButton" Width="40" Height="40" Margin="5" Click="WhiteColor_Click" MouseEnter="Button_MouseEnter" MouseLeave="Button_MouseLeave">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1">
+                                        <Image Source="image\white_color.png"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                        <TextBlock Text="Белый" VerticalAlignment="Center" Foreground="White" FontSize="16"/>
+                    </StackPanel>
+                </StackPanel>
+                <!--Выбор уровня сложности-->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10" Width="352">
+                    <TextBlock Text="Уровень сложности: " FontWeight="Bold" FontSize="16" Foreground="White" VerticalAlignment="Center" Width="198"/>
+                    <ComboBox Width="156" Height="25" x:Name ="difficultyComboBox" SelectionChanged="Difficulty_SelectionChanged">
+                        <ComboBox.Style>
+                            <Style TargetType="ComboBox">
+                                <Setter Property="Background" Value="#FF6A5A"/>
+                                <Setter Property="BorderBrush" Value="White"/>
+                                <Setter Property="BorderThickness" Value="1"/>
+                            </Style>
+                        </ComboBox.Style>
+                        <ComboBox.ItemContainerStyle>
+                            <Style TargetType="ComboBoxItem">
+                                <Setter Property="Background" Value="#FF6A8D" />
+                            </Style>
+                        </ComboBox.ItemContainerStyle>
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="{Binding Path=Background, RelativeSource={RelativeSource AncestorType=ComboBoxItem}}" CornerRadius="5">
+                                    <ContentPresenter />
+                                </Border>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                        <ComboBoxItem Content="Легкий"/>
+                        <ComboBoxItem Content="Сложный"/>
+                    </ComboBox>
+                </StackPanel>
+                <TextBlock x:Name="ErrorMessage" Foreground="Red" Visibility="Hidden" Margin="0,4,0,-3"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,21,0,4">
+                    <Button Content="Создать игру" Width="163" Click="CreateGame_Click" Height="50" Style="{StaticResource CreateGameButton}" FontSize="15" Margin="0,5"/>
+                    <StackPanel Width="20"/>
+                    <Button Content="Продолжить игру" Width="163" Click="ContinueGame_Click" Height="50" Style="{StaticResource CreateGameButton}" FontSize="15"/>
+                </StackPanel>
+                <Separator Width="358" Height="34"/>
+                <Button Content="Выход" Click="BackToLoginWindow" Style="{StaticResource LinkBackButtonStyle}" Margin="0,5,0,7"/>
+            </StackPanel>
+            <Border.Effect>
+                <DropShadowEffect Color="White" BlurRadius="50" ShadowDepth="0"/>
+            </Border.Effect>
+        </Border>
+    </Grid>
 </UserControl>

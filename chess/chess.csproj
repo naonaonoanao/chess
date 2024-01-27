@@ -6,20 +6,44 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="image\black_color.png" />
+    <None Remove="image\chess_for_static.png" />
+    <None Remove="image\chooseYesNo.png" />
+    <None Remove="image\email_icon.png" />
     <None Remove="image\login_background.jpeg" />
     <None Remove="image\login_background.jpg" />
+    <None Remove="image\neuro_picture.png" />
+    <None Remove="image\password_icon.png" />
+    <None Remove="image\person_picture.png" />
+    <None Remove="image\Shiro_back.png" />
+    <None Remove="image\Sora_back.png" />
+    <None Remove="image\white_color.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="image\black_color.png" />
+    <Resource Include="image\chess_for_static.png" />
+    <Resource Include="image\chooseYesNo.png" />
+    <Resource Include="image\email_icon.png" />
     <Resource Include="image\login_background.jpg" />
+    <Resource Include="image\neuro_picture.png" />
+    <Resource Include="image\password_icon.png" />
+    <EmbeddedResource Include="image\Shiro_back.png" />
+    <EmbeddedResource Include="image\Sora_back.png" />
+    <Resource Include="image\person_picture.png" />
+    <Resource Include="image\white_color.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Gera.Chess" Version="1.0.5" />
+    <PackageReference Include="Keras.NET" Version="3.8.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.11" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.11" />
+    <PackageReference Include="Python38" Version="3.8.0" />
   </ItemGroup>
 
 </Project>

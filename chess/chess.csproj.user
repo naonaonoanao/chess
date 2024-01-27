@@ -19,6 +19,9 @@
     <Compile Update="MenuView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="PromoteDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="RegistrationView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -37,6 +40,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="MenuView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="PromoteDialog.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="RegistrationView.xaml">

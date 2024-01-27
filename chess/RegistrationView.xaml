@@ -209,7 +209,7 @@
                     </Grid.ColumnDefinitions>
                     <CheckBox x:Name="conditionsBox" VerticalAlignment="Top" HorizontalAlignment="Center"  Margin="0,10,0,0" Height="54">
                         <TextBlock Foreground="White" FontSize="14" TextWrapping="Wrap" Height="58" Width="337">
-Я согласен с условиями пользовательского соглашения и с условиями получения, хранениями и использования персональных данных
+Я согласен с условиями пользовательского соглашения и с условиями получения, хранения и использования персональных данных
                         </TextBlock>
                     </CheckBox>
                 </Grid>

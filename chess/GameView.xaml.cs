@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Mail;
+using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
@@ -23,17 +24,26 @@ namespace uwp
         public bool isFirstMove = false;
         private string promotionType = "";
         public bool isGameStarted = false;
+        UserRepository userRepository = new UserRepository();
 
         private PromotionType? userPromotion;
         private PromotionType? neuroPromotion;
+        public string login;
 
-        public GameView()
+        public bool isMinimax;
+        ChessMinimax minimax = new ChessMinimax();
+
+        public GameView(bool _isMinimax = true)
         {
+            isMinimax = _isMinimax;
+            if (!isMinimax)
+            {
             MakeMove("clear-board", "");
+            }
             InitializeComponent();
+            RedrawBoard();
             board.OnPromotePawn += HandlePromotePawn;
         }
-
 
 
         private void HandlePromotePawn(object sender, PromotionEventArgs e)
@@ -47,6 +57,7 @@ namespace uwp
             else
             {
                 var dialog = new PromoteDialog();
+                dialog.Owner = Application.Current.MainWindow;
                 if (dialog.ShowDialog() == true)
                 {
                     userPromotion = dialog.getUserPromotion;
@@ -59,7 +70,6 @@ namespace uwp
 
         public void UpdateColor()
         {
-
             if (isSecondPlayerMove) // если игрок черный
             {
                 ChessGrid.Resources["NeuroColor"] = new SolidColorBrush(Colors.Black);
@@ -67,7 +77,6 @@ namespace uwp
 
                 if (!isFirstMove) // если не сделан первый ход в игре
                 {
-                    
                     ((GetCell(1, 4).Child as TextBlock).Text, (GetCell(1, 5).Child as TextBlock).Text) = ((GetCell(1, 5).Child as TextBlock).Text, (GetCell(1, 4).Child as TextBlock).Text);
                     ((GetCell(8, 4).Child as TextBlock).Text, (GetCell(8, 5).Child as TextBlock).Text) = ((GetCell(8, 5).Child as TextBlock).Text, (GetCell(8, 4).Child as TextBlock).Text);
                     
@@ -75,17 +84,28 @@ namespace uwp
 
                     worker.DoWork += (s, arg) =>
                     {
-                        var neuroMove = MakeMove("make-neuro-move", "");
-
-                        Application.Current.Dispatcher.Invoke(() =>
+                        if (isMinimax)
                         {
-                            ApplyNeuroMove(neuroMove);
-                        });
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                ApplyMinimaxMove();
+                            });
+                        }
+                        else
+                        {
+                            var neuroMove = MakeMove("make-neuro-move", "");
+
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                ApplyNeuroMove(neuroMove);
+                            });
+                        }
                     };
 
                     worker.RunWorkerCompleted += (s, arg) =>
                     {
-                        showMovesHistory();
+                        ShowMovesHistory();
+                        ShowCapturedFigures();
                     };
 
                     worker.RunWorkerAsync();
@@ -102,7 +122,6 @@ namespace uwp
         private const string ServerUrl = "http://localhost:8000/";
 
         private TextBlock? selectedCell;
-        private Style? selectedPrevStyle;
 
         private ChessBoard board = new ChessBoard();
 
@@ -212,17 +231,133 @@ namespace uwp
             if (selectedCell != null && selectedCell.Parent is Border)
             {
                 Border selectedBorder = (Border)selectedCell.Parent;
-                selectedPrevStyle = selectedBorder.Style;
-                selectedBorder.Style = ChessGrid.Resources["ChessCellSelected"] as Style;
+
+                if (selectedBorder.Style != ChessGrid.Resources["ChessMoveCellPers"] as Style)
+                {
+                    selectedBorder.Style = ChessGrid.Resources["ChessCellSelectedMove"] as Style;
+
+                }
+                else
+                {
+                    selectedBorder.Style = ChessGrid.Resources["ChessCellSelectedMoveLast"] as Style;
+                }
+
+                int fromRow = Grid.GetRow((UIElement)selectedCell.Parent);
+                int fromColumn = Grid.GetColumn((UIElement)selectedCell.Parent);
+                string fromCell;
+
+                if (isSecondPlayerMove)
+                {
+                    fromCell = blackColumns[fromColumn] + blackRows[fromRow];
+                }
+                else
+                {
+                    fromCell = blackColumnsReverse[fromColumn] + blackRowsReverse[fromRow];
+                }
+
+                Move[] moves;
+                try
+                {
+                    moves = board.Moves(new Position(fromCell));
+                }
+                catch (Exception e) 
+                {
+                    return;
+                }
+
+                foreach (Move move in moves)
+                {
+                    int y;
+                    int x;
+
+                    if (isSecondPlayerMove)
+                    {
+                        y = move.NewPosition.Y + 1;
+                        x = 8 - move.NewPosition.X;
+                    }
+                    else
+                    {
+                        y = 8 - move.NewPosition.Y;
+                        x = move.NewPosition.X + 1;
+                    }
+
+                    var cell = GetCell(y, x);
+                    if (cell.Style != ChessGrid.Resources["ChessMoveCellPers"] as Style)
+                    {
+                        cell.Style = ChessGrid.Resources["ChessCellSelectedMove"] as Style;
+                    }
+                    else
+                    {
+                        cell.Style = ChessGrid.Resources["ChessCellSelectedMoveLast"] as Style;
+                    }
+                }
+            }
+        }
+
+        private void HighlightKing(Position king)
+        {
+            int y;
+            int x;
+
+            if (isSecondPlayerMove)
+            {
+                y = king.Y + 1;
+                x = 8 - king.X;
+            }
+            else
+            {
+                y = 8 - king.Y;
+                x = king.X + 1;
+            }
+
+            var cell = GetCell(y, x);
+
+            cell.Style = ChessGrid.Resources["ChessCellChecked"] as Style;
+        }
+
+        private void UnhighlightKing()
+        {
+            foreach (UIElement element in ChessGrid.Children)
+            {
+                if (element is Border border && border.Style == ChessGrid.Resources["ChessCellChecked"] as Style)
+                {
+                    int row = Grid.GetRow(border);
+                    int column = Grid.GetColumn(border);
+
+                    if ((row + column) % 2 == 0)
+                    {
+                        border.Style = ChessGrid.Resources["ChessCellWhite"] as Style;
+                    }
+                    else
+                    {
+                        border.Style = ChessGrid.Resources["ChessCellBlack"] as Style;
+                    }
+                }
             }
         }
 
         private void ReturnPrevSelectedStyle()
         {
-            if (selectedCell != null && selectedCell.Parent is Border)
+            foreach (UIElement element in ChessGrid.Children)
             {
-                Border selectedBorder = (Border)selectedCell.Parent;
-                selectedBorder.Style = selectedPrevStyle;
+                if (element is Border border && border.Style == ChessGrid.Resources["ChessCellSelectedMove"] as Style)
+                {
+                    int row = Grid.GetRow(border);
+                    int column = Grid.GetColumn(border);
+
+                    if ((row + column) % 2 == 0)
+                    {
+                        border.Style = ChessGrid.Resources["ChessCellWhite"] as Style;
+                    }
+                    else
+                    {
+                        border.Style = ChessGrid.Resources["ChessCellBlack"] as Style;
+                    }
+                }
+                else if (element is Border border2 && border2.Style == ChessGrid.Resources["ChessCellSelectedMoveLast"] as Style)
+                {
+                    border2.Style = ChessGrid.Resources["ChessMoveCellPers"] as Style;
+                }
             }
         }
 
@@ -238,7 +373,11 @@ namespace uwp
             {
                 isGameStarted = true;
                 isFirstMove = true;
-                SwapPieces(selectedCell, targetCell);
+                //SwapPieces(selectedCell, targetCell);
+                Debug.Write(board.ToAscii());
+
+                RedrawBoard();
+
                 selectedCell = null;
 
                 // Добавляем выделение ячеек
@@ -246,41 +385,78 @@ namespace uwp
 
                 worker.DoWork += (s, arg) =>
                 {
-                    // Применяем ход к доске, используя ваши существующие методы
-                    string userMove;
-                    if (isSecondPlayerMove)
+                    // Применяем ход к доске
+                    if (isMinimax)
                     {
-                        userMove = $"{blackColumns[fromColumn]}{blackRows[fromRow]}{blackColumns[toColumn]}{blackRows[toRow]}";
+                        if (promotionType != "")
+                        {
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                targetCell.Text = piecesDict[promotionType];
+                            });
+                        }
+                        promotionType = "";
+
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            ApplyMinimaxMove();
+                        }
+                        );
                     }
                     else
                     {
-                        userMove = $"{blackColumnsReverse[fromColumn]}{blackRowsReverse[fromRow]}{blackColumnsReverse[toColumn]}{blackRowsReverse[toRow]}";
-                    }
+                        string userMove;
+                        if (isSecondPlayerMove)
+                        {
+                            userMove = $"{blackColumns[fromColumn]}{blackRows[fromRow]}{blackColumns[toColumn]}{blackRows[toRow]}";
+                        }
+                        else
+                        {
+                            userMove = $"{blackColumnsReverse[fromColumn]}{blackRowsReverse[fromRow]}{blackColumnsReverse[toColumn]}{blackRowsReverse[toRow]}";
+                        }
 
-                    Debug.WriteLine(userMove);
+                        Debug.WriteLine(userMove);
 
-                    if (promotionType != "")
-                    {
+                        if (promotionType != "")
+                        {
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                targetCell.Text = piecesDict[promotionType];
+                            });
+                        }
+
+                        MakeMove($"make-user-move/?move={userMove + promotionType}", "");
+                        promotionType = "";
+
+                        var neuroMove = MakeMove("make-neuro-move", "");
+
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            targetCell.Text = piecesDict[promotionType];
+                            ApplyNeuroMove(neuroMove);
                         });
                     }
-                    
-                    MakeMove($"make-user-move/?move={userMove+promotionType}", "");
-                    promotionType = "";
-
-                    var neuroMove = MakeMove("make-neuro-move", "");
-
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        ApplyNeuroMove(neuroMove);
-                    });
                 };
 
                 worker.RunWorkerCompleted += (s, arg) =>
                 {
-                    showMovesHistory();
+                    ShowMovesHistory();
+                    ShowCapturedFigures();
+
+                    if (board.BlackKingChecked && kingChecked != "b")
+                    {
+                        kingChecked = "b";
+                        HighlightKing(board.BlackKing);
+                    }
+                    else if (board.WhiteKingChecked && kingChecked != "w")
+                    {
+                        kingChecked = "w";
+                        HighlightKing(board.WhiteKing);
+                    }
+                    else if (kingChecked != "")
+                    {
+                        kingChecked = "";
+                        UnhighlightKing();
+                    }
 
                     if (board.IsEndGame)
                     {
@@ -290,7 +466,24 @@ namespace uwp
 
                 worker.RunWorkerAsync();
 
-                showMovesHistory();
+                if (board.BlackKingChecked && kingChecked != "b")
+                {
+                    kingChecked = "b";
+                    HighlightKing(board.BlackKing);
+                }
+                else if (board.WhiteKingChecked && kingChecked != "w")
+                {
+                    kingChecked = "w";
+                    HighlightKing(board.WhiteKing);
+                }
+                else if (kingChecked != "")
+                {
+                    kingChecked = "";
+                    UnhighlightKing();
+                }
+
+                ShowMovesHistory();
+                ShowCapturedFigures();
 
                 if (board.IsEndGame)
                 {
@@ -302,6 +495,8 @@ namespace uwp
                 selectedCell = null;
             }
         }
+
+        string kingChecked = "";
 
         private TextBlock? selectedCellBeforePers;
         private Style? selectedPrevStyleBeforePers;
@@ -342,11 +537,10 @@ namespace uwp
         }
 
         
-        // метод для выделения ячеек человека
+        // Метод для выделения ячеек человека
         private void HighlightMovedCellsPers(int fromRow, int fromColumn, int toRow, int toColumn)
         {
             {
-                // Сбрасываем предыдущее выделение
                 ReturnWithoutHightlightMove();
 
                 // Выделяем ячейку, откуда сделан ход
@@ -370,16 +564,14 @@ namespace uwp
 
                     Border toCellBorder = (Border)toCellTextBlock.Parent;
                     toCellBorder.Style = ChessGrid.Resources["ChessMoveCellPers"] as Style;
-
                 }
             }
         }
         
-        // метод для выделения ячеек нейронки
+        // Метод для выделения ячеек нейронки
         private void HighlightMovedCellsNeuro(int fromRow, int fromColumn, int toRow, int toColumn)
         {
             {
-                // Сбрасываем предыдущее выделение
                 ReturnWithoutHightlightMove();
 
                 // Выделяем ячейку, откуда сделан ход
@@ -391,8 +583,7 @@ namespace uwp
                     selectedPrevStyleBeforeNeuro = selectedBorder.Style;
 
                     Border fromCellBorder = (Border)fromCellTextBlock.Parent;
-                    fromCellBorder.Style = ChessGrid.Resources["ChessMoveCellNeuro"] as Style;
-
+                    fromCellBorder.Style = ChessGrid.Resources["ChessMoveCellPers"] as Style;
                 }
 
                 // Выделяем ячейку, куда сделан ход
@@ -403,14 +594,96 @@ namespace uwp
                     selectedPrevStyleAfterNeuro = selectedBorder.Style;
 
                     Border toCellBorder = (Border)toCellTextBlock.Parent;
-                    toCellBorder.Style = ChessGrid.Resources["ChessMoveCellNeuro"] as Style;
+                    toCellBorder.Style = ChessGrid.Resources["ChessMoveCellPers"] as Style;
                 }
             }
         }
 
-        private void showMovesHistory()
+
+        // Показ статистики в левом бордере
+        private void ShowStatisticHistory(User user)
+        {
+            // Создаем новый Border для каждой строки статистики
+            Border moveBorder = new Border
+            {
+                BorderBrush = Brushes.White,
+                BorderThickness = new Thickness(1),
+                Margin = new Thickness(0, 15, 0, 8),
+                Padding = new Thickness(5)
+            };
+
+
+            TextBlock usernameTextBlock = new TextBlock
+            {
+                Text = $"Логин: {user.Username}",
+                Foreground = Brushes.White,
+                FontSize = 18,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+
+            TextBlock totalGamesTextBlock = new TextBlock
+            {
+                Text = $"Всего: {user.WinCount + user.LoseCount + user.DrawCount}",
+                Foreground = Brushes.White,
+                FontSize = 18,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+
+            TextBlock winsTextBlock = new TextBlock
+            {
+                Text = $"Выиграно: {user.WinCount}",
+                Foreground = Brushes.White,
+                FontSize = 18,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+
+            TextBlock losesTextBlock = new TextBlock
+            {
+                Text = $"Проиграно: {user.LoseCount}",
+                Foreground = Brushes.White,
+                FontSize = 18,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+
+            TextBlock drawsTextBlock = new TextBlock
+            {
+                Text = $"Сыграно в ничью: {user.DrawCount}",
+                Foreground = Brushes.White,
+                FontSize = 18,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+
+
+            moveBorder.Child = usernameTextBlock;
+            statistic.Children.Add(moveBorder);
+
+            moveBorder = new Border { BorderBrush = Brushes.White, BorderThickness = new Thickness(1), Margin = new Thickness(0, 8, 0, 8), Padding = new Thickness(5) };
+            moveBorder.Child = totalGamesTextBlock;
+            statistic.Children.Add(moveBorder);
+
+            moveBorder = new Border { BorderBrush = Brushes.White, BorderThickness = new Thickness(1), Margin = new Thickness(0, 8, 0, 8), Padding = new Thickness(5) };
+            moveBorder.Child = winsTextBlock;
+            statistic.Children.Add(moveBorder);
+
+            moveBorder = new Border { BorderBrush = Brushes.White, BorderThickness = new Thickness(1), Margin = new Thickness(0, 8, 0, 8), Padding = new Thickness(5) };
+            moveBorder.Child = losesTextBlock;
+            statistic.Children.Add(moveBorder);
+
+            moveBorder = new Border { BorderBrush = Brushes.White, BorderThickness = new Thickness(1), Margin = new Thickness(0, 8, 0, 8), Padding = new Thickness(5) };
+            moveBorder.Child = drawsTextBlock;
+            statistic.Children.Add(moveBorder);
+        }
+
+
+        private void ShowMovesHistory()
         {
             history.Children.Clear();
+
             int i = 1;
 
             for (int index = 0; index < board.ExecutedMoves.Count; index += 2)
@@ -480,6 +753,9 @@ namespace uwp
                 i++;
             }
         }
+
+
+       
 
 
 
@@ -578,8 +854,8 @@ namespace uwp
                     EndGame();
                 }
 
-                SwapPieces(GetCell(fromRow, fromColumn).Child as TextBlock, GetCell(toRow, toColumn).Child as TextBlock);
-
+                //SwapPieces(GetCell(fromRow, fromColumn).Child as TextBlock, GetCell(toRow, toColumn).Child as TextBlock);
+                RedrawBoard();
                 if (promotionType != "")
                 {
                     (GetCell(toRow, toColumn).Child as TextBlock).Text = piecesDict[promotionType];
@@ -595,14 +871,162 @@ namespace uwp
             }
         }
 
+        private void ApplyMinimaxMove()
+        {
+            if (gameResultPopup.IsOpen)
+            {
+                return;
+            }
+
+            isGameStarted = true;
+
+            Dictionary<int, int> reversedBlackRows = ReversedDictionaryRows(blackRows);
+            Dictionary<string, int> reversedBlackColumns = ReversedDictionaryColumns(blackColumns);
+            Dictionary<int, int> reversedBlackRowsReverse = ReversedDictionaryRows(blackRowsReverse);
+            Dictionary<string, int> reversedBlackColumnsReverse = ReversedDictionaryColumns(blackColumnsReverse);
+            Dictionary<string, PromotionType> reversedPromotionDict = ReversedPromDict(promotionDict);
+
+            Move minimaxMove = minimax.GetBestMove(board.ToFen(), isSecondPlayerMove);
+
+            string neuroMoveValue = minimaxMove.OriginalPosition.ToString() + minimaxMove.NewPosition.ToString();
+
+            if (minimaxMove.Parameter != null)
+            {
+                if ((minimaxMove.Parameter as MovePromotion) != null)
+                {
+                    promotionType = promotionDict[(minimaxMove.Parameter as MovePromotion).PromotionType];
+                    neuroPromotion = reversedPromotionDict[promotionType];
+                }
+            }
+
+            // Применяем ход к доске
+            int fromRow;
+            int fromColumn;
+            int toRow;
+            int toColumn;
+
+            // Применяем ход к доске, используя ваши существующие методы
+            string fromCell;
+            string toCell;
+            if (isSecondPlayerMove)
+            {
+                fromRow = reversedBlackRows[int.Parse(neuroMoveValue[1].ToString())];
+                fromColumn = reversedBlackColumns[neuroMoveValue[0].ToString()];
+                toRow = reversedBlackRows[int.Parse(neuroMoveValue[3].ToString())];
+                toColumn = reversedBlackColumns[neuroMoveValue[2].ToString()];
+
+                fromCell = blackColumns[fromColumn] + blackRows[fromRow];
+                toCell = blackColumns[toColumn] + blackRows[toRow];
+            }
+            else
+            {
+                fromRow = reversedBlackRowsReverse[int.Parse(neuroMoveValue[1].ToString())];
+                fromColumn = reversedBlackColumnsReverse[neuroMoveValue[0].ToString()];
+                toRow = reversedBlackRowsReverse[int.Parse(neuroMoveValue[3].ToString())];
+                toColumn = reversedBlackColumnsReverse[neuroMoveValue[2].ToString()];
+
+                fromCell = blackColumnsReverse[fromColumn] + blackRowsReverse[fromRow];
+                toCell = blackColumnsReverse[toColumn] + blackRowsReverse[toRow];
+            }
+
+            Move move = new Move(fromCell, toCell);
+            board.Move(move);
+
+            // Вызываем метод выделения ячеек
+            HighlightMovedCellsNeuro(fromRow, fromColumn, toRow, toColumn);
+
+            if (board.IsEndGame)
+            {
+                EndGame();
+            }
+
+            //SwapPieces(GetCell(fromRow, fromColumn).Child as TextBlock, GetCell(toRow, toColumn).Child as TextBlock);
+            RedrawBoard();
+            if (promotionType != "")
+            {
+                (GetCell(toRow, toColumn).Child as TextBlock).Text = piecesDict[promotionType];
+            }
+
+            neuroPromotion = null;
+            promotionType = "";
+        }
+
         private Border GetCell(int row, int column)
         {
             return (Border)ChessGrid.Children.Cast<UIElement>()
                 .FirstOrDefault(c => Grid.GetRow(c) == row && Grid.GetColumn(c) == column);
         }
 
+        private void RedrawBoard()
+        {
+            string letters = "abcdefgh";
+            if (!isSecondPlayerMove)
+            {
+                for (short i = 0; i < 8; i++)
+                {
+                    for (short j = 1; j <= 8; j++)
+                    {
+                        var cell = GetCell(j, 8 - i);
+                        var text = cell.Child as TextBlock;
 
-        private bool IsValidMove(int fromRow, int fromColumn, int toRow, int toColumn, TextBlock targetCell)
+                        var piece = board[letters[7 - i], (short)(9 - j)];
+                        
+                        if (piece == null)
+                        {
+                            text.Text = " ";
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"{letters[7 - i]}{(short)(9 - j)} | {8 - i} {j} | {piece}");
+                            text.Text = PieceCaptured[piece.ToString()];
+
+                            if (piece.ToString()[0] == 'b')
+                            {
+                                text.Style = ChessGrid.Resources["PlayerPers"] as Style;
+                            }
+                            else
+                            {
+                                text.Style = ChessGrid.Resources["NeuroPers"] as Style;
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (short i = 0; i < 8; i++)
+                {
+                    for (short j = 1; j <= 8; j++)
+                    {
+                        var cell = GetCell(j, 8 - i);
+                        var text = cell.Child as TextBlock;
+
+                        var piece = board[letters[i], j];
+                        
+                        if (piece == null)
+                        {
+                            text.Text = " ";
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"{letters[i]}{j} | {8 - i} {j} | {piece}");
+                            text.Text = PieceCaptured[piece.ToString()];
+
+                            if (piece.ToString()[0] == 'w')
+                            {
+                                text.Style = ChessGrid.Resources["PlayerPers"] as Style;
+                            }
+                            else
+                            {
+                                text.Style = ChessGrid.Resources["NeuroPers"] as Style;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+            private bool IsValidMove(int fromRow, int fromColumn, int toRow, int toColumn, TextBlock targetCell)
         {
             string fromCell;
             string toCell;
@@ -643,15 +1067,12 @@ namespace uwp
             {
                 board.Move(move);
 
-                Console.WriteLine(board.ToAscii());
-                Console.WriteLine(board.ToPgn());
-
                 return true;
             }
             return false;
         }
 
-        // "да" на попапе после сдаться
+        // Кнопка "Да" на попапе после сдаться
         private void yesGiveUpButtonClick(object sender, RoutedEventArgs e) 
         {
             if (isSecondPlayerMove)
@@ -665,20 +1086,69 @@ namespace uwp
             EndGame();
         }
 
+        private Dictionary<string, string> PieceCaptured = new Dictionary<string, string>()
+        {
+            { "wp", "♟" },
+            { "bp", "♟" },
+            { "wn", "♞" },
+            { "bn", "♞" },
+            { "wb", "♝" },
+            { "bb", "♝" },
+            { "wr", "♜" },
+            { "br", "♜" },
+            { "wq", "♛" },
+            { "bq", "♛" },
+            { "wk", "♚" },
+            { "bk", "♚" }
+        };
+
+
+        private void ShowCapturedFigures()
+        {
+            capturedByPerson.Children.Clear();
+            capturedByNeuro.Children.Clear();
+
+
+            var capturedBlackTextBlock = new TextBlock();
+            var capturedWhiteTextBlock = new TextBlock();
+
+            foreach (var piece in board.CapturedBlack)
+            {
+                capturedBlackTextBlock.Text += PieceCaptured[piece.ToString()] + " ";
+            }
+
+            foreach (var piece in board.CapturedWhite)
+            {
+                capturedWhiteTextBlock.Text += PieceCaptured[piece.ToString()] + " ";
+            }
+
+            if (isSecondPlayerMove)
+            {
+                capturedByNeuro.Children.Add(capturedBlackTextBlock);
+                capturedByPerson.Children.Add(capturedWhiteTextBlock);
+            }
+            else
+            {
+                capturedByNeuro.Children.Add(capturedWhiteTextBlock);
+                capturedByPerson.Children.Add(capturedBlackTextBlock);
+            }
+        }
+
+
+
         private void noGiveUpButtonClick(object sender, RoutedEventArgs e)
         {
             giveUpPopup.IsOpen = false;
         }
 
 
-
         private void EndGame()
         {
             Debug.WriteLine($"Wonside - {board.EndGame.WonSide}, player is black - {isSecondPlayerMove}");
 
-            string mainMessage = "";
-            string imagePath = "";
-            string additionalMessage = "";
+            string mainMessage;
+            string imagePath;
+            string additionalMessage;
 
             SolidColorBrush textColor = new SolidColorBrush();
 
@@ -686,26 +1156,26 @@ namespace uwp
             {
                 mainMessage = "Ничья";
                 additionalMessage = "Игра не закончена, пока мы умеем дышать.";
-                imagePath = "C:\\Users\\egoro\\source\\repos\\chess\\chess\\image\\Shiro_back.png";
+                imagePath = "../../../image/Shiro_back.png";
                 textColor = Brushes.White;
-                
+                userRepository.IncrementDraw(login);
             }
             else if ((board.EndGame.WonSide.AsChar == 'w' && !isSecondPlayerMove) || (board.EndGame.WonSide.AsChar == 'b' && isSecondPlayerMove))
             {
                 mainMessage = "Победа";
                 additionalMessage = "Шах и мат не значит, что вражеский король пал. " +
                                     "Это лишь объявление того, что теперь он твой.";
-                imagePath = "C:\\Users\\egoro\\source\\repos\\chess\\chess\\image\\Sora_back.png";
+                imagePath = "../../../image/Sora_back.png";
                 textColor = Brushes.Green;
-                
+                userRepository.IncrementWins(login);
             }
             else
             {
                 mainMessage = "Поражение";
                 additionalMessage = "Не существует слово «поражение» для пустых.";
-                imagePath = "C:\\Users\\egoro\\source\\repos\\chess\\chess\\image\\Shiro_back.png";
+                imagePath = "../../../image/Shiro_back.png";
                 textColor = Brushes.Red;
-                
+                userRepository.IncrementLoses(login);
             }
 
             // Показать попап с соответствующим текстом и фоном
@@ -717,9 +1187,8 @@ namespace uwp
             giveUpPopup.IsOpen = true;
         }
 
-       
-
-        // попап при конце игры
+    
+        // Попап при конце игры
         private void ShowPopup(string mainMessage, string additionalMessage, string imagePath, SolidColorBrush textColor)
         {
             // Установить текст сообщения в текстовом блоке попапа
@@ -782,16 +1251,13 @@ namespace uwp
         {
             if (isBorderVisible)
             {
-                // Если бордер видим, скрываем его
                 HideBorder();
             }
             else
             {
-                // Если бордер скрыт, показываем его
                 ShowBorder();
             }
 
-            // Инвертируем состояние видимости
             isBorderVisible = !isBorderVisible;
         }
 
@@ -803,19 +1269,20 @@ namespace uwp
             heightAnimation.To = 541;
             heightAnimation.Duration = TimeSpan.FromSeconds(0.5);
 
-            // Применение анимации к высоте бордера
             animatedBorder.BeginAnimation(Border.HeightProperty, heightAnimation);
+
+            var user = userRepository.GetUserByUsername(login);
+            statistic.Children.Clear();
+            ShowStatisticHistory(user);
         }
 
         private void HideBorder()
         {
-            // Создание анимации изменения высоты
             DoubleAnimation heightAnimation = new DoubleAnimation();
             heightAnimation.From = 541;
             heightAnimation.To = 0;
             heightAnimation.Duration = TimeSpan.FromSeconds(0.5);
 
-            // Применение анимации к высоте бордера
             animatedBorder.BeginAnimation(Border.HeightProperty, heightAnimation);
         }
 

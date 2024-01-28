@@ -26,11 +26,11 @@ namespace uwp
         }
 
 
-        private bool isButtonHighlighted = false;
-        private Button lastClickedButton = null;
+        public bool isButtonHighlighted = false;
+        public Button lastClickedButton = null;
 
 
-        private void BlackColor_Click(object sender, RoutedEventArgs e)
+        public void BlackColor_Click(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("Black color clicked");
             IsSecondPlayerMove = true;
@@ -39,7 +39,7 @@ namespace uwp
             ToggleHighlight(blackColorButton);
         }
 
-        private void WhiteColor_Click(object sender, RoutedEventArgs e)
+        public void WhiteColor_Click(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("White color clicked");
             IsSecondPlayerMove = false;
@@ -48,7 +48,7 @@ namespace uwp
             ToggleHighlight(whiteColorButton);
         }
 
-        private void Button_MouseEnter(object sender, MouseEventArgs e)
+        public void Button_MouseEnter(object sender, MouseEventArgs e)
         {
             Button button = sender as Button;
             if (button != null && lastClickedButton != button)
@@ -60,7 +60,7 @@ namespace uwp
             }
         }
 
-        private void Button_MouseLeave(object sender, MouseEventArgs e)
+        public void Button_MouseLeave(object sender, MouseEventArgs e)
         {
             Button button = sender as Button;
             if (button != null && lastClickedButton != button && !isButtonHighlighted)
@@ -70,7 +70,7 @@ namespace uwp
             }
         }
 
-        private void ToggleHighlight(Button button)
+        public void ToggleHighlight(Button button)
         {
             if (lastClickedButton != null && lastClickedButton != button)
             {
@@ -97,7 +97,7 @@ namespace uwp
         }
 
         public bool isMinimax = true;
-        private void Difficulty_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        public void Difficulty_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (sender is ComboBox comboBox)
             {
@@ -117,7 +117,7 @@ namespace uwp
             }
         }
 
-        private void CreateGame_Click(object sender, RoutedEventArgs e)
+        public void CreateGame_Click(object sender, RoutedEventArgs e)
         {
             bool isColorSelected = isButtonHighlighted;
             bool isDifficultySelected = ((ComboBoxItem)difficultyComboBox.SelectedItem)?.Content != null;
@@ -153,7 +153,7 @@ namespace uwp
             }
         }
 
-        private void ContinueGame_Click(object sender, RoutedEventArgs e)
+        public void ContinueGame_Click(object sender, RoutedEventArgs e)
         {
             ResetColorSelection();
 
@@ -166,7 +166,7 @@ namespace uwp
             RequestChangeContent?.Invoke(this, args);
         }
 
-        private void BackToLoginWindow(object sender, RoutedEventArgs e)
+        public void BackToLoginWindow(object sender, RoutedEventArgs e)
         {
             ResetColorSelection();
 
@@ -179,7 +179,7 @@ namespace uwp
             RequestChangeContent?.Invoke(this, args);
         }
 
-        private void ResetColorSelection()
+        public void ResetColorSelection()
         {
             isButtonHighlighted = false;
             lastClickedButton = null;
@@ -190,7 +190,7 @@ namespace uwp
             whiteColorButton.BorderBrush = transparentBrush;
         }
 
-        private void ResetDifficultySelection()
+        public void ResetDifficultySelection()
         {
             difficultyComboBox.SelectedIndex = -1;
         }

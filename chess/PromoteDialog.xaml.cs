@@ -18,10 +18,12 @@ namespace chess
     public partial class PromoteDialog : Window
     {
         private PromotionType userPromotion;
+        private bool isTest;
 
-        public PromoteDialog()
+        public PromoteDialog(bool isTest = false)
         {
             InitializeComponent();
+            this.isTest = isTest;
         }
 
         public PromotionType getUserPromotion
@@ -29,28 +31,40 @@ namespace chess
             get { return userPromotion; }
         }
 
-        private void chooseRookButtonClick(object sender, EventArgs e)
+        public void chooseRookButtonClick(object sender, EventArgs e)
         {
             userPromotion = PromotionType.ToRook;
-            DialogResult = true;
+            if (!isTest)
+            {
+                DialogResult = true;
+            }
         }
 
-        private void chooseBishopButtonClick(object sender, EventArgs e)
+        public void chooseBishopButtonClick(object sender, EventArgs e)
         {
             userPromotion = PromotionType.ToBishop;
-            DialogResult = true;
+            if (!isTest)
+            {
+                DialogResult = true;
+            }
         }
 
-        private void chooseKnightButtonClick(object sender, EventArgs e)
+        public void chooseKnightButtonClick(object sender, EventArgs e)
         {
             userPromotion = PromotionType.ToKnight;
-            DialogResult = true;
+            if (!isTest)
+            {
+                DialogResult = true;
+            }
         }
 
-        private void chooseQueenButtonClick(object sender, EventArgs e)
+        public void chooseQueenButtonClick(object sender, EventArgs e)
         {
             userPromotion = PromotionType.ToQueen;
-            DialogResult = true;
+            if (!isTest)
+            {
+                DialogResult = true;
+            }
         }
     }
 }

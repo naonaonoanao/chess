@@ -230,6 +230,13 @@ namespace uwp
         {
             if (selectedCell != null && selectedCell.Parent is Border)
             {
+                int fromRow = Grid.GetRow((UIElement)selectedCell.Parent);
+                int fromColumn = Grid.GetColumn((UIElement)selectedCell.Parent);
+                string fromCell;
+                if (fromRow > 9 || fromRow == 0 || fromColumn == 0 || fromColumn > 9)
+                {
+                    return;
+                }
                 Border selectedBorder = (Border)selectedCell.Parent;
 
                 if (selectedBorder.Style != ChessGrid.Resources["ChessMoveCellPers"] as Style)
@@ -241,11 +248,6 @@ namespace uwp
                 {
                     selectedBorder.Style = ChessGrid.Resources["ChessCellSelectedMoveLast"] as Style;
                 }
-
-                int fromRow = Grid.GetRow((UIElement)selectedCell.Parent);
-                int fromColumn = Grid.GetColumn((UIElement)selectedCell.Parent);
-                string fromCell;
-
                 if (isSecondPlayerMove)
                 {
                     fromCell = blackColumns[fromColumn] + blackRows[fromRow];
@@ -1021,11 +1023,20 @@ namespace uwp
             string fromCell;
             string toCell;
 
+            if (toColumn > 9 || toRow > 9 || toColumn == 0 || toRow == 0)
+            {
+                return false;
+            }
+            if (fromColumn > 9 || fromRow > 9 || fromColumn == 0 || fromRow == 0)
+            {
+                return false;
+            }
             if (isSecondPlayerMove)
             {
                 fromCell = blackColumns[fromColumn] + blackRows[fromRow];
                 toCell = blackColumns[toColumn] + blackRows[toRow];
             }
+            
             else
             {
                 fromCell = blackColumnsReverse[fromColumn] + blackRowsReverse[fromRow];
@@ -1175,7 +1186,6 @@ namespace uwp
             giveUpPopup.IsOpen = true;
         }
 
-    
         private void ShowPopup(string mainMessage, string additionalMessage, string imagePath, SolidColorBrush textColor)
         {
             popupMessage.Text = mainMessage;

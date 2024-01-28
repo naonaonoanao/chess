@@ -603,7 +603,6 @@ namespace uwp
         // Показ статистики в левом бордере
         private void ShowStatisticHistory(User user)
         {
-            // Создаем новый Border для каждой строки статистики
             Border moveBorder = new Border
             {
                 BorderBrush = Brushes.White,
@@ -719,7 +718,6 @@ namespace uwp
                     }
                 }
 
-                // Создаем новый Border для каждой пары ходов
                 Border moveBorder = new Border
                 {
                     BorderBrush = Brushes.White,
@@ -728,7 +726,6 @@ namespace uwp
                     Padding = new Thickness(5)
                 };
 
-                // Создаем новый TextBlock для хода
                 TextBlock moveTextBlock = new TextBlock
                 {
                     Text = $"{i}. {fromCellMove1} - {toCellMove1}",
@@ -738,25 +735,18 @@ namespace uwp
                     VerticalAlignment = VerticalAlignment.Center
                 };
 
-                // Если второй ход в паре выполнен, добавляем разделитель и второй ход
                 if (move2 != null)
                 {
                     moveTextBlock.Text += $" | {fromCellMove2} - {toCellMove2}";
                 }
 
-                // Устанавливаем TextBlock как Child для Border
                 moveBorder.Child = moveTextBlock;
 
-                // Добавляем Border в StackPanel
                 history.Children.Add(moveBorder);
 
                 i++;
             }
         }
-
-
-       
-
 
 
         private string MakeMove(string endpoint, string move)
@@ -1135,7 +1125,6 @@ namespace uwp
         }
 
 
-
         private void noGiveUpButtonClick(object sender, RoutedEventArgs e)
         {
             giveUpPopup.IsOpen = false;
@@ -1178,7 +1167,6 @@ namespace uwp
                 userRepository.IncrementLoses(login);
             }
 
-            // Показать попап с соответствующим текстом и фоном
             ShowPopup(mainMessage, additionalMessage, imagePath, textColor);
         }
 
@@ -1188,21 +1176,16 @@ namespace uwp
         }
 
     
-        // Попап при конце игры
         private void ShowPopup(string mainMessage, string additionalMessage, string imagePath, SolidColorBrush textColor)
         {
-            // Установить текст сообщения в текстовом блоке попапа
             popupMessage.Text = mainMessage;
             quotePopupMessage.Text = additionalMessage;
 
-            // Установить цвет текста
             popupMessage.Foreground = textColor;
 
-            // Установить изображение в кисть фона
             ImageBrush imageBrush = new ImageBrush(new BitmapImage(new Uri(imagePath, UriKind.RelativeOrAbsolute)));
             popupBackground.Background = imageBrush;
 
-            // Отобразить попап
             gameResultPopup.IsOpen = true;
         }
 
@@ -1232,17 +1215,6 @@ namespace uwp
             RequestChangeContent?.Invoke(this, args);
 
             gameResultPopup.IsOpen = false;
-        }
-
-        //Замена фигур
-        private void SwapPieces(TextBlock sourceCell, TextBlock targetCell)
-        {
-            var oldForeground = sourceCell.Foreground;
-            sourceCell.Foreground = targetCell.Foreground;
-            targetCell.Foreground = oldForeground;
-
-            targetCell.Text = sourceCell.Text;
-            sourceCell.Text = " ";
         }
 
         private bool isBorderVisible = false;

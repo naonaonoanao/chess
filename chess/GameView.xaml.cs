@@ -811,7 +811,7 @@ namespace uwp
                 int toRow;
                 int toColumn;
 
-                // Применяем ход к доске, используя ваши существующие методы
+                // Применяем ход к доске
                 string fromCell;
                 string toCell;
                 if (isSecondPlayerMove)
@@ -897,7 +897,6 @@ namespace uwp
             int toRow;
             int toColumn;
 
-            // Применяем ход к доске, используя ваши существующие методы
             string fromCell;
             string toCell;
             if (isSecondPlayerMove)
